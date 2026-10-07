@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemStorage PRO - System Zarządzania Magazynem Odczynników</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Laboratory & GHS Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        lab: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#102a43',
+                        },
+                        danger: {
+                            light: '#ffe8e6',
+                            DEFAULT: '#e53e3e',
+                            dark: '#9b2c2c',
+                        },
+                        warning: {
+                            light: '#fffaf0',
+                            DEFAULT: '#dd6b20',
+                            dark: '#7b341e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Custom Diamond Risk Badge */
+        .hazard-diamond {
+            width: 28px;
+            height: 28px;
+            transform: rotate(45deg);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #dc2626;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .hazard-diamond i {
+            transform: rotate(-45deg);
+            color: #dc2626;
+            font-size: 13px;
+        }
+
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Top Header -->
+    <header class="bg-lab-900 text-white sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & System Name -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-flask-vial text-xl text-white"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg tracking-wide">ChemStorage <span class="text-blue-400">PRO</span></span>
+                        <span class="hidden md:inline-block text-xs bg-lab-800 text-lab-200 px-2 py-0.5 rounded ml-2 font-mono">v3.4-LAB</span>
+                    </div>
+                </div>
+
+                <!-- Central quick status -->
+                <div class="hidden lg:flex items-center space-x-6 text-xs text-lab-200">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Czujniki szaf: <b>Aktywne</b></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-temperature-low text-blue-300"></i>
+                        <span>Chłodnia: <b>+4.2°C</b></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-bell text-amber-300"></i>
+                        <span id="header-alert-count">Przypomnienia e-mail: <b>3 aktywne</b></span>
+                    </div>
+                </div>
+
+                <!-- User Profile & Role Switcher -->
+                <div class="flex items-center space-x-4">
+                    <div class="bg-lab-800 border border-lab-700 rounded-lg p-1.5 flex items-center">
+                        <label for="user-role-select" class="text-xs text-lab-300 mr-2 pl-1 hidden sm:inline"><i class="fa-solid fa-user-shield mr-1"></i> Rola:</label>
+                        <select id="user-role-select" onchange="toggleUserRole(this.value)" class="bg-lab-900 text-white text-xs font-semibold py-1 px-2.5 rounded border border-lab-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                            <option value="analyst" selected>Analityk / Laborant</option>
+                            <option value="manager">Kierownik Magazynu (Admin)</option>
+                        </select>
+                    </div>
+
+                    <!-- User Avatar -->
+                    <div class="flex items-center space-x-2 border-l border-lab-700 pl-4">
+                        <div class="w-8 h-8 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center text-xs" id="user-avatar">
+                            AL
+                        </div>
+                        <div class="hidden xl:block text-left">
+                            <div class="text-xs font-medium leading-none" id="user-name-display">Dr Adam Kowalski</div>
+                            <div class="text-[10px] text-lab-300 mt-0.5" id="user-role-display">Analityk Działu B+R</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Role Alert Banner (Dynamic) -->
+        <div id="role-banner" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r shadow-sm flex items-start justify-between">
+            <div class="flex items-start space-x-3">
+                <i class="fa-solid fa-circle-info text-blue-500 mt-0.5 text-lg"></i>
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-blue-800">Tryb Dostępności: <span id="banner-role-name">Analityk / Laborant</span></h4>
+                    <p class="text-sm text-blue-900 mt-0.5">Posiadasz uprawnienia do pobierania prób oraz zamawiania odczynników o niskim stopniu zagrożenia (Klasa 1-2). Zamawianie i edycja substancji wysokiego ryzyka (GHS High Risk) wymaga autoryzacji Kierownika.</p>
+                </div>
+            </div>
+            <button onclick="toggleEmailConfigModal()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded transition flex items-center space-x-1.5 shrink-0">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Konfiguruj Alert E-mail</span>
+            </button>
+        </div>
+
+        <!-- Metrics & Warehouse Occupancy Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Global Capacity Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Całkowite Zapełnienie Magazynu</span>
+                        <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"><i class="fa-solid fa-check-circle mr-1"></i>Stan Optymalny</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2 my-2">
+                        <span class="text-3xl font-extrabold text-slate-900">71.4%</span>
+                        <span class="text-xs text-slate-500">z 3,500 L / kg pojemności całkowitej</span>
+                    </div>
+                    
+                    <!-- Main Progress Bar -->
+                    <div class="w-full bg-slate-100 rounded-full h-3.5 mb-4 overflow-hidden border border-slate-200">
+                        <div class="bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500 h-3.5 rounded-full" style="width: 71.4%"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100 text-center">
+                    <div class="bg-slate-50 p-2 rounded">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold">Ciecze</div>
+                        <div class="text-sm font-bold text-slate-800">1,420 L</div>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold">Ciała Stałe</div>
+                        <div class="text-sm font-bold text-slate-800">890 kg</div>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded">
+                        <div class="text-[10px] text-slate-500 uppercase font-bold">Gazy</div>
+                        <div class="text-sm font-bold text-slate-800">190 m³</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Storage Zones Occupancy -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 lg:col-span-2 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center">
+                        <i class="fa-solid fa-warehouse text-blue-600 mr-2"></i> Zapełnienie Stref Przechowywania & Warunki
+                    </h3>
+                    <span class="text-xs text-slate-400">Aktualizacja w czasie rzeczywistym</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Zone 1 -->
+                    <div class="border border-slate-100 bg-slate-50/50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-fire-extinguisher text-rose-500 mr-1.5"></i> Szafa Ogniotrwała Type 90 (Szafa A)</span>
+                            <span class="font-bold text-slate-900">85%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5">
+                            <div class="bg-amber-500 h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-slate-500">
+                            <span>Rozpuszczalniki organiczne, łatwopalne</span>
+                            <span class="font-mono text-amber-700 font-semibold">Wysokie obciążenie</span>
+                        </div>
+                    </div>
+
+                    <!-- Zone 2 -->
+                    <div class="border border-slate-100 bg-slate-50/50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-snowflake text-cyan-500 mr-1.5"></i> Chłodnia Farmaceutyczna (+2°C do +8°C)</span>
+                            <span class="font-bold text-slate-900">42%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5">
+                            <div class="bg-cyan-500 h-2 rounded-full" style="width: 42%"></div>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-slate-500">
+                            <span>Enzymy, odczynniki wrażliwe na temp.</span>
+                            <span class="font-mono text-emerald-600 font-semibold">W normie</span>
+                        </div>
+                    </div>
+
+                    <!-- Zone 3 -->
+                    <div class="border border-slate-100 bg-slate-50/50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-fan text-indigo-500 mr-1.5"></i> Szafa Wentylowana na Kwasy i Zasady</span>
+                            <span class="font-bold text-slate-900">68%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5">
+                            <div class="bg-indigo-500 h-2 rounded-full" style="width: 68%"></div>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-slate-500">
+                            <span>Substancje żrące i dymiące</span>
+                            <span class="font-mono text-emerald-600 font-semibold">W normie</span>
+                        </div>
+                    </div>
+
+                    <!-- Zone 4 -->
+                    <div class="border border-slate-100 bg-slate-50/50 p-3 rounded-lg">
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="font-bold text-slate-700 flex items-center"><i class="fa-solid fa-box-archive text-slate-500 mr-1.5"></i> Magazyn Główny (Suche/Argon)</span>
+                            <span class="font-bold text-slate-900">55%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2 mb-1.5">
+                            <div class="bg-slate-600 h-2 rounded-full" style="width: 55%"></div>
+                        </div>
+                        <div class="flex justify-between text-[11px] text-slate-500">
+                            <span>Odczynniki stałe, sole, gazy w butlach</span>
+                            <span class="font-mono text-emerald-600 font-semibold">W normie</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Controls & Search Section -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                
+                <!-- Search Box -->
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="search-input" onkeyup="filterChemicals()" placeholder="Szukaj odczynnika po nazwie, wzorze chemical, numerze CAS lub serii..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Hazard Level Filter -->
+                    <select id="filter-hazard" onchange="filterChemicals()" class="border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium text-slate-700 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="all">Wszystkie poziomy zagrożeń</option>
+                        <option value="low">Poziom 1-2 (Niski / Umiarkowany)</option>
+                        <option value="high">Poziom 3-4 (Wysoki / Ekstremalny)</option>
+                    </select>
+
+                    <!-- State Filter -->
+                    <select id="filter-state" onchange="filterChemicals()" class="border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium text-slate-700 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="all">Wszystkie stany skupienia</option>
+                        <option value="liquid">Ciekły (L, mL)</option>
+                        <option value="solid">Stały (kg, g)</option>
+                        <option value="gas">Gazowy (m³, L)</option>
+                    </select>
+
+                    <!-- Expiry Status Filter -->
+                    <select id="filter-expiry" onchange="filterChemicals()" class="border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium text-slate-700 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="all">Wszystkie terminy ważności</option>
+                        <option value="valid">W normie (Zielony)</option>
+                        <option value="warning">Bliski końca (Żółty)</option>
+                        <option value="expired">Przeterminowane (Czerwony)</option>
+                    </select>
+
+                    <!-- Action: Order/Add Chemical -->
+                    <button id="add-chem-btn" onclick="openOrderModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-4 py-2 rounded-lg shadow-sm transition flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Zamów / Dodaj Odczynnik</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chemicals Inventory Table -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="chemicals-table">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200">
+                            <th class="py-3.5 px-4">Odczynnik / Nr CAS</th>
+                            <th class="py-3.5 px-4">GHS & Klasa Nebezp.</th>
+                            <th class="py-3.5 px-4">Ilość & Stan Skupienia</th>
+                            <th class="py-3.5 px-4">Warunki Przechowywania</th>
+                            <th class="py-3.5 px-4">Data Ważności</th>
+                            <th class="py-3.5 px-4">Status & Alert E-mail</th>
+                            <th class="py-3.5 px-4 text-right">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 text-xs text-slate-700" id="table-body">
+                        <!-- Dynamic Rows Generated via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Footer Stats -->
+            <div class="bg-slate-50 px-4 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+                <div>
+                    Wyświetlanie <span id="visible-count-display" class="font-bold text-slate-800">0</span> z <span id="total-count-display" class="font-bold text-slate-800">0</span> pozycji w magazynie
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span> W normie</span>
+                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-1.5"></span> Bliski końca (&lt; 30 dni)</span>
+                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 mr-1.5"></span> Przeterminowany</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: Zamawianie / Dodawanie nowego odczynnika -->
+    <div id="order-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            
+            <!-- Modal Header -->
+            <div class="bg-lab-900 text-white p-4 px-6 flex items-center justify-between rounded-t-xl">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-flatbed text-blue-400 text-lg"></i>
+                    <h3 class="font-bold text-base">Zamawianie / Rejestracja Odczynnika</h3>
+                </div>
+                <button onclick="closeOrderModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Role Warning in Modal (if locked) -->
+            <div id="modal-role-warning" class="hidden bg-amber-50 border-b border-amber-200 p-3 px-6 text-xs text-amber-800 flex items-center space-x-2">
+                <i class="fa-solid fa-lock text-amber-600"></i>
+                <span>Uwaga: Jako <b>Analityk</b> możesz zamawiać wyłącznie odczynniki o niskim/średnim ryzyku (Klasa 1-2). Odczynniki Niebezpieczne (Klasa 3-4) są zablokowane.</span>
+            </div>
+
+            <!-- Modal Form -->
+            <form id="order-form" onsubmit="handleOrderSubmit(event)" class="p-6 space-y-4">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Nazwa Odczynnika -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nazwa Odczynnika *</label>
+                        <input type="text" id="form-name" required placeholder="np. Kwas Siarkowy 96%" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+
+                    <!-- Numer CAS -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Numer CAS / Wzór</label>
+                        <input type="text" id="form-cas" placeholder="np. 7664-93-9 (H2SO4)" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Stan Skupienia -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Stan Skupienia *</label>
+                        <select id="form-state" onchange="updateUnitLabel()" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="liquid" selected>Ciekły</option>
+                            <option value="solid">Stały</option>
+                            <option value="gas">Gazowy</option>
+                        </select>
+                    </div>
+
+                    <!-- Ilość Zamawiana -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ilość Całkowita *</label>
+                        <div class="flex">
+                            <input type="number" id="form-quantity" required min="0.1" step="0.1" placeholder="np. 2.5" class="w-full border border-slate-300 rounded-l-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                            <span id="form-unit-badge" class="bg-slate-100 border border-l-0 border-slate-300 rounded-r-lg px-2.5 py-2 text-xs font-bold text-slate-600 flex items-center">L</span>
+                        </div>
+                    </div>
+
+                    <!-- Klasa Niebezpieczeństwa -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Klasa Zagrożenia *</label>
+                        <select id="form-hazard-level" onchange="checkModalRolePermissions()" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="1">Poziom 1 - Niskie</option>
+                            <option value="2">Poziom 2 - Umiarkowane</option>
+                            <option value="3">Poziom 3 - Wysokie (GHS Risk)</option>
+                            <option value="4">Poziom 4 - Ekstremalne (GHS High)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Warunki Przechowywania -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Sposób Przechowywania *</label>
+                        <select id="form-storage" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="Szafa Ogniotrwała Type 90">Szafa Ogniotrwała Type 90 (Szafa A)</option>
+                            <option value="Chłodnia +2°C do +8°C">Chłodnia +2°C do +8°C (Chłodnia B)</option>
+                            <option value="Szafa Wentylowana Kwasy/Zasady">Szafa Wentylowana na Kwasy/Zasady</option>
+                            <option value="Suche miejsce, atmosfera Argonu">Suche miejsce / Atmosfera Argonu</option>
+                            <option value="Półka Standardowa">Półka Standardowa (Temp. pokojowa)</option>
+                        </select>
+                    </div>
+
+                    <!-- Data Ważności -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Data Ważności Series *</label>
+                        <input type="date" id="form-expiry" required class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- Piktoogramy GHS Selection -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Piktoogramy Niebezpieczeństwa GHS</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        <label class="border border-slate-200 rounded p-2 flex items-center space-x-2 cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="ghs" value="corrosive" class="rounded text-blue-600">
+                            <i class="fa-solid fa-vial-virus text-rose-600 text-sm"></i>
+                            <span class="text-[11px]">Żrąca</span>
+                        </label>
+                        <label class="border border-slate-200 rounded p-2 flex items-center space-x-2 cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="ghs" value="flammable" class="rounded text-blue-600">
+                            <i class="fa-solid fa-fire text-amber-500 text-sm"></i>
+                            <span class="text-[11px]">Łatwopalna</span>
+                        </label>
+                        <label class="border border-slate-200 rounded p-2 flex items-center space-x-2 cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="ghs" value="toxic" class="rounded text-blue-600">
+                            <i class="fa-solid fa-skull-crossbones text-slate-800 text-sm"></i>
+                            <span class="text-[11px]">Toksyczna</span>
+                        </label>
+                        <label class="border border-slate-200 rounded p-2 flex items-center space-x-2 cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="ghs" value="oxidizing" class="rounded text-blue-600">
+                            <i class="fa-solid fa-bolt text-yellow-500 text-sm"></i>
+                            <span class="text-[11px]">Utleniająca</span>
+                        </label>
+                        <label class="border border-slate-200 rounded p-2 flex items-center space-x-2 cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="ghs" value="health" class="rounded text-blue-600">
+                            <i class="fa-solid fa-hand-dots text-purple-600 text-sm"></i>
+                            <span class="text-[11px]">Zdrowie</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Alert Mail Switch -->
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-800 block">Automatyczny Alert E-mail</span>
+                        <span class="text-[11px] text-slate-500">Wysyłaj powiadomienia do kierownika przed upływem daty ważności.</span>
+                    </div>
+                    <input type="checkbox" id="form-email-alert" checked class="w-4 h-4 text-blue-600 rounded">
+                </div>
+
+                <!-- Buttons -->
+                <div class="pt-2 flex justify-end space-x-3 border-t border-slate-200">
+                    <button type="button" onclick="closeOrderModal()" class="px-4 py-2 border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-100 transition">Anuluj</button>
+                    <button type="submit" id="submit-order-btn" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">Złóż Zamówienie</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- MODAL 2: Konfiguracja Przypomnień E-mail -->
+    <div id="email-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-md w-full">
+            <div class="bg-lab-900 text-white p-4 px-6 flex items-center justify-between rounded-t-xl">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-envelope-circle-check text-blue-400 text-lg"></i>
+                    <h3 class="font-bold text-base">Konfiguracja Alertów E-mail</h3>
+                </div>
+                <button onclick="toggleEmailConfigModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-600">
+                    System automatycznie skanuje stan ważności prób i wysyła powiadomienia zbiorcze do wskazanych kierowników oraz analityków.
+                </p>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Adresy E-mail Odbiorców</label>
+                    <input type="email" value="kierownik.lab@chemstorage.pl" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none mb-2">
+                    <input type="email" value="analiz.chem@chemstorage.pl" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Czas Pierwszego Ostrzeżenia</label>
+                    <select class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="30">30 dni przed terminem ważności</option>
+                        <option value="14" selected>14 dni przed terminem ważności</option>
+                        <option value="7">7 dni przed terminem ważności</option>
+                    </select>
+                </div>
+
+                <div class="pt-2 flex justify-end space-x-3 border-t border-slate-200">
+                    <button onclick="toggleEmailConfigModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition">Zapisz Ustawienia</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic & Data Handling -->
+    <script>
+        // Initial Mock Database for Chemicals
+        let chemicalsDB = [
+            {
+                id: "CHEM-001",
+                name: "Aceton cz.d.a.",
+                cas: "67-64-1 / (CH3)2CO",
+                state: "liquid", // liquid, solid, gas
+                currentQty: 750,
+                maxQty: 1000,
+                unit: "mL",
+                storage: "Szafa Ogniotrwała Type 90",
+                expiryDate: "2026-11-15",
+                hazardLevel: 3, // 1: Low, 2: Moderate, 3: High, 4: Extreme
+                ghs: ["flammable", "health"],
+                emailAlert: true,
+                batch: "LOT-2024-88A"
+            },
+            {
+                id: "CHEM-002",
+                name: "Kwas Chlorowodorowy 37%",
+                cas: "7647-01-0 / HCl",
+                state: "liquid",
+                currentQty: 2.1,
+                maxQty: 5.0,
+                unit: "L",
+                storage: "Szafa Wentylowana Kwasy/Zasady",
+                expiryDate: "2026-09-10", // Expiry passed relative to late 2026
+                hazardLevel: 4,
+                ghs: ["corrosive", "toxic"],
+                emailAlert: true,
+                batch: "LOT-2023-11F"
+            },
+            {
+                id: "CHEM-003",
+                name: "Wodorotlenek Sodu (Płatki)",
+                cas: "1310-73-2 / NaOH",
+                state: "solid",
+                currentQty: 850,
+                maxQty: 1000,
+                unit: "g",
+                storage: "Półka Standardowa",
+                expiryDate: "2027-05-20",
+                hazardLevel: 2,
+                ghs: ["corrosive"],
+                emailAlert: true,
+                batch: "LOT-2025-02C"
+            },
+            {
+                id: "CHEM-004",
+                name: "Argon Sprężony 99.999%",
+                cas: "7440-37-1 / Ar",
+                state: "gas",
+                currentQty: 45,
+                maxQty: 50,
+                unit: "m³",
+                storage: "Suche miejsce, atmosfera Argonu",
+                expiryDate: "2028-01-01",
+                hazardLevel: 1,
+                ghs: [],
+                emailAlert: false,
+                batch: "CYL-9921"
+            },
+            {
+                id: "CHEM-005",
+                name: "Rhodamine B (Barwnik)",
+                cas: "81-88-9 / C28H31ClN2O3",
+                state: "solid",
+                currentQty: 12,
+                maxQty: 100,
+                unit: "g",
+                storage: "Chłodnia +2°C do +8°C",
+                expiryDate: "2026-10-25", // Close to expiry
+                hazardLevel: 2,
+                ghs: ["health"],
+                emailAlert: true,
+                batch: "LOT-2024-99X"
+            },
+            {
+                id: "CHEM-006",
+                name: "Cyjanek Potasu cz.d.a.",
+                cas: "151-50-8 / KCN",
+                state: "solid",
+                currentQty: 250,
+                maxQty: 250,
+                unit: "g",
+                storage: "Szafa Wentylowana Kwasy/Zasady",
+                expiryDate: "2027-12-10",
+                hazardLevel: 4,
+                ghs: ["toxic", "health"],
+                emailAlert: true,
+                batch: "LOT-2024-HAZ1"
+            }
+        ];
+
+        // State variables
+        let currentRole = "analyst"; // 'analyst' or 'manager'
+
+        // Initialize App on Load
+        window.onload = function () {
+            renderTable();
+            updateRoleUI();
+        };
+
+        // Switch between Analyst and Manager Roles
+        function toggleUserRole(newRole) {
+            currentRole = newRole;
+            updateRoleUI();
+            renderTable(); // Re-render to update disabled button states
+        }
+
+        function updateRoleUI() {
+            const avatar = document.getElementById('user-avatar');
+            const nameDisplay = document.getElementById('user-name-display');
+            const roleDisplay = document.getElementById('user-role-display');
+            const bannerRoleName = document.getElementById('banner-role-name');
+            const banner = document.getElementById('role-banner');
+
+            if (currentRole === 'manager') {
+                avatar.textContent = 'KM';
+                avatar.className = "w-8 h-8 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-xs";
+                nameDisplay.textContent = 'Mgr inż. Marta Nowak';
+                roleDisplay.textContent = 'Główny Kierownik Magazynu';
+                bannerRoleName.textContent = 'Kierownik Magazynu / Administrator';
+                banner.className = "bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r shadow-sm flex items-start justify-between";
+            } else {
+                avatar.textContent = 'AL';
+                avatar.className = "w-8 h-8 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center text-xs";
+                nameDisplay.textContent = 'Dr Adam Kowalski';
+                roleDisplay.textContent = 'Analityk Działu B+R';
+                bannerRoleName.textContent = 'Analityk / Laborant';
+                banner.className = "bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r shadow-sm flex items-start justify-between";
+            }
+        }
+
+        // Calculate status based on date
+        function getExpiryStatus(dateString) {
+            const today = new Date();
+            const expiry = new Date(dateString);
+            const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                return { label: "Przeterminowany", color: "bg-rose-100 text-rose-800 border-rose-300", type: "expired", days: diffDays };
+            } else if (diffDays <= 30) {
+                return { label: `Koniec za ${diffDays} dni`, color: "bg-amber-100 text-amber-800 border-amber-300", type: "warning", days: diffDays };
+            } else {
+                return { label: "W normie", color: "bg-emerald-100 text-emerald-800 border-emerald-300", type: "valid", days: diffDays };
+            }
+        }
+
+        // Main function to render chemical inventory table
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            const hazardVal = document.getElementById('filter-hazard').value;
+            const stateVal = document.getElementById('filter-state').value;
+            const expiryVal = document.getElementById('filter-expiry').value;
+
+            let visibleCount = 0;
+
+            chemicalsDB.forEach(chem => {
+                const expiryStatus = getExpiryStatus(chem.expiryDate);
+
+                // Filters Logic
+                const matchesSearch = chem.name.toLowerCase().includes(searchVal) || chem.cas.toLowerCase().includes(searchVal) || chem.id.toLowerCase().includes(searchVal);
+                
+                let matchesHazard = true;
+                if (hazardVal === 'low') matchesHazard = chem.hazardLevel <= 2;
+                if (hazardVal === 'high') matchesHazard = chem.hazardLevel >= 3;
+
+                let matchesState = true;
+                if (stateVal !== 'all') matchesState = chem.state === stateVal;
+
+                let matchesExpiry = true;
+                if (expiryVal !== 'all') matchesExpiry = expiryStatus.type === expiryVal;
+
+                if (matchesSearch && matchesHazard && matchesState && matchesExpiry) {
+                    visibleCount++;
+
+                    // GHS Badges HTML
+                    let ghsIconsHTML = '';
+                    if (chem.ghs.includes('corrosive')) ghsIconsHTML += `<span title="Żrąca" class="hazard-diamond"><i class="fa-solid fa-vial-virus"></i></span> `;
+                    if (chem.ghs.includes('flammable')) ghsIconsHTML += `<span title="Łatwopalna" class="hazard-diamond"><i class="fa-solid fa-fire text-amber-500"></i></span> `;
+                    if (chem.ghs.includes('toxic')) ghsIconsHTML += `<span title="Toksyczna" class="hazard-diamond"><i class="fa-solid fa-skull-crossbones text-slate-800"></i></span> `;
+                    if (chem.ghs.includes('health')) ghsIconsHTML += `<span title="Zagrożenie zdrowia" class="hazard-diamond"><i class="fa-solid fa-hand-dots text-purple-600"></i></span> `;
+
+                    if (!ghsIconsHTML) ghsIconsHTML = `<span class="text-xs text-slate-400 font-mono">Brak (Niski)</span>`;
+
+                    // Calculate Percentage Remaining
+                    const percentRemaining = Math.round((chem.currentQty / chem.maxQty) * 100);
+                    let progressColor = "bg-blue-600";
+                    if (percentRemaining < 20) progressColor = "bg-rose-500";
+
+                    // Check if high risk order is restricted for current role
+                    const isHighRisk = chem.hazardLevel >= 3;
+                    const isRestricted = isHighRisk && currentRole === 'analyst';
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50/80 transition border-b border-slate-100";
+
+                    tr.innerHTML = `
+                        <td class="py-3.5 px-4">
+                            <div class="font-bold text-slate-900">${chem.name}</div>
+                            <div class="text-[11px] text-slate-500 font-mono">CAS: ${chem.cas} | <span class="text-slate-400">${chem.batch}</span></div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center space-x-2">
+                                ${ghsIconsHTML}
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${chem.hazardLevel >= 3 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-slate-100 text-slate-600 border-slate-200'}">
+                                    Poziom ${chem.hazardLevel}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center justify-between text-xs font-bold mb-1">
+                                <span>${chem.currentQty} / ${chem.maxQty} ${chem.unit}</span>
+                                <span class="text-[10px] text-slate-400 font-normal">${percentRemaining}%</span>
+                            </div>
+                            <div class="w-28 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                                <div class="${progressColor} h-1.5 rounded-full" style="width: ${percentRemaining}%"></div>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4 text-xs">
+                            <span class="inline-flex items-center text-slate-700">
+                                <i class="fa-solid fa-box text-slate-400 mr-1.5"></i> ${chem.storage}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 font-mono text-xs">
+                            ${chem.expiryDate}
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="flex flex-col space-y-1">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${expiryStatus.color}">
+                                    ${expiryStatus.label}
+                                </span>
+                                <span class="text-[10px] text-slate-400 flex items-center">
+                                    <i class="fa-solid ${chem.emailAlert ? 'fa-envelope-circle-check text-blue-500' : 'fa-envelope-open text-slate-300'} mr-1"></i>
+                                    ${chem.emailAlert ? 'Alert e-mail aktywny' : 'Brak alertu'}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4 text-right">
+                            ${isRestricted ? `
+                                <button disabled title="Wymagane uprawnienia Kierownika dla substancji wysokiego ryzyka" class="bg-slate-100 text-slate-400 cursor-not-allowed text-xs px-2.5 py-1.5 rounded border border-slate-200 font-medium inline-flex items-center">
+                                    <i class="fa-solid fa-lock mr-1"></i> Zablokowane
+                                </button>
+                            ` : `
+                                <button onclick="quickOrder('${chem.id}')" class="bg-lab-800 hover:bg-lab-900 text-white text-xs px-2.5 py-1.5 rounded transition font-medium inline-flex items-center shadow-sm">
+                                    <i class="fa-solid fa-rotate mr-1"></i> Uzupełnij
+                                </button>
+                            `}
+                        </td>
+                    `;
+
+                    tbody.appendChild(tr);
+                }
+            });
+
+            document.getElementById('visible-count-display').textContent = visibleCount;
+            document.getElementById('total-count-display').textContent = chemicalsDB.length;
+        }
+
+        function filterChemicals() {
+            renderTable();
+        }
+
+        function openOrderModal() {
+            document.getElementById('order-modal').classList.remove('hidden');
+            checkModalRolePermissions();
+        }
+
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+
+        function toggleEmailConfigModal() {
+            const modal = document.getElementById('email-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Update form units based on state of matter
+        function updateUnitLabel() {
+            const state = document.getElementById('form-state').value;
+            const badge = document.getElementById('form-unit-badge');
+            if (state === 'liquid') badge.textContent = 'L';
+            if (state === 'solid') badge.textContent = 'kg';
+            if (state === 'gas') badge.textContent = 'm³';
+        }
+
+        // Restrict High Risk Order Options in Modal for Analysts
+        function checkModalRolePermissions() {
+            const hazardLevel = parseInt(document.getElementById('form-hazard-level').value);
+            const submitBtn = document.getElementById('submit-order-btn');
+            const warning = document.getElementById('modal-role-warning');
+
+            if (currentRole === 'analyst' && hazardLevel >= 3) {
+                submitBtn.disabled = true;
+                submitBtn.className = "px-5 py-2 bg-slate-300 text-slate-500 text-xs font-semibold rounded-lg cursor-not-allowed";
+                warning.classList.remove('hidden');
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.className = "px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition shadow-sm";
+                warning.classList.add('hidden');
+            }
+        }
+
+        // Handle Add/Order Form Submit
+        function handleOrderSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('form-name').value;
+            const cas = document.getElementById('form-cas').value || "Brak CAS";
+            const state = document.getElementById('form-state').value;
+            const quantity = parseFloat(document.getElementById('form-quantity').value);
+            const hazardLevel = parseInt(document.getElementById('form-hazard-level').value);
+            const storage = document.getElementById('form-storage').value;
+            const expiry = document.getElementById('form-expiry').value;
+            const emailAlert = document.getElementById('form-email-alert').checked;
+
+            // Collect GHS checkboxes
+            const ghsCheckboxes = document.querySelectorAll('input[name="ghs"]:checked');
+            const ghs = Array.from(ghsCheckboxes).map(cb => cb.value);
+
+            let unit = "L";
+            if (state === "solid") unit = "kg";
+            if (state === "gas") unit = "m³";
+
+            const newChem = {
+                id: `CHEM-00${chemicalsDB.length + 1}`,
+                name: name,
+                cas: cas,
+                state: state,
+                currentQty: quantity,
+                maxQty: quantity,
+                unit: unit,
+                storage: storage,
+                expiryDate: expiry,
+                hazardLevel: hazardLevel,
+                ghs: ghs,
+                emailAlert: emailAlert,
+                batch: `LOT-2026-NEW`
+            };
+
+            chemicalsDB.unshift(newChem);
+            renderTable();
+            closeOrderModal();
+
+            // Reset Form
+            document.getElementById('order-form').reset();
+        }
+
+        // Quick Reorder for Existing Items
+        function quickOrder(chemId) {
+            const chem = chemicalsDB.find(c => c.id === chemId);
+            if (chem) {
+                chem.currentQty = chem.maxQty; // Top-up to maximum
+                renderTable();
+            }
+        }
+    </script>
+</body>
+</html>

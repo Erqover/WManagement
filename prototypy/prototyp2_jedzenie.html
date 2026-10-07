@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshStore PRO - System Magazynu Spożywczego & HACCP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        fresh: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+        }
+        .tab-btn.active {
+            border-bottom-color: #16a34a;
+            color: #16a34a;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation Header -->
+    <header class="bg-fresh-900 text-white sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-fresh-500 rounded-lg flex items-center justify-center text-white shadow-sm">
+                        <i class="fa-solid fa-store text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-lg tracking-wide text-white">FreshStore <span class="text-fresh-300">WMS</span></span>
+                        <span class="hidden md:inline-block text-[11px] bg-fresh-800 text-fresh-200 px-2 py-0.5 rounded ml-2 font-mono">HACCP Certified</span>
+                    </div>
+                </div>
+
+                <!-- Climate Controls Info -->
+                <div class="hidden lg:flex items-center space-x-6 text-xs text-fresh-100">
+                    <div class="flex items-center space-x-2 bg-fresh-800/60 px-3 py-1.5 rounded-lg border border-fresh-700">
+                        <i class="fa-solid fa-snowflake text-cyan-300"></i>
+                        <span>Mroźnia: <b class="text-white font-mono">-19.5°C</b></span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-fresh-800/60 px-3 py-1.5 rounded-lg border border-fresh-700">
+                        <i class="fa-solid fa-temperature-arrow-down text-blue-300"></i>
+                        <span>Chłodnia Nabiał: <b class="text-white font-mono">+3.8°C</b></span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-fresh-800/60 px-3 py-1.5 rounded-lg border border-fresh-700">
+                        <i class="fa-solid fa-droplet text-emerald-300"></i>
+                        <span>Owoce Wilgotność: <b class="text-white font-mono">88%</b></span>
+                    </div>
+                </div>
+
+                <!-- User Profile & SMS Alert Button -->
+                <div class="flex items-center space-x-3">
+                    <button onclick="triggerAlertNotification()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-3 py-2 rounded-lg transition shadow-sm flex items-center space-x-1.5">
+                        <i class="fa-solid fa-bell animate-bounce"></i>
+                        <span class="hidden sm:inline">Wyślij Alerty FEFO</span>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-fresh-700 text-white font-bold flex items-center justify-center text-xs border border-fresh-500">
+                        KS
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white border-b border-slate-200 sticky top-16 z-20 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8 overflow-x-auto">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn active py-3.5 px-1 border-b-2 border-transparent text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-700 transition flex items-center whitespace-nowrap">
+                    <i class="fa-solid fa-chart-pie mr-2"></i> Dashboard i Strefy
+                </button>
+                <button onclick="switchTab('products')" id="tab-products" class="tab-btn py-3.5 px-1 border-b-2 border-transparent text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-700 transition flex items-center whitespace-nowrap">
+                    <i class="fa-solid fa-boxes-stacked mr-2"></i> Pełny Magazyn
+                </button>
+                <button onclick="switchTab('fefo')" id="tab-fefo" class="tab-btn py-3.5 px-1 border-b-2 border-transparent text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-700 transition flex items-center whitespace-nowrap">
+                    <i class="fa-solid fa-clock-rotate-left mr-2 text-rose-500"></i> Strefa FEFO / Krótkoterminowe
+                    <span id="fefo-badge-count" class="ml-2 bg-rose-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+                </button>
+                <button onclick="switchTab('haccp')" id="tab-haccp" class="tab-btn py-3.5 px-1 border-b-2 border-transparent text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-700 transition flex items-center whitespace-nowrap">
+                    <i class="fa-solid fa-shield-halved mr-2 text-fresh-600"></i> Standardy HACCP & Sanepid
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Notification Toast Banner -->
+        <div id="toast-banner" class="hidden bg-emerald-600 text-white p-4 rounded-xl shadow-lg flex items-center justify-between transition-all duration-300">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-circle-check text-2xl text-emerald-200"></i>
+                <div>
+                    <h4 class="font-bold text-sm" id="toast-title">Powiadomienie</h4>
+                    <p class="text-xs text-emerald-100" id="toast-message">Operacja powiodła się.</p>
+                </div>
+            </div>
+            <button onclick="hideToast()" class="text-emerald-200 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- ================= TAB 1: DASHBOARD ================= -->
+        <section id="section-dashboard" class="space-y-6">
+            
+            <!-- Quick Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Liczba Produktów</span>
+                        <div class="text-2xl font-extrabold text-slate-900 mt-1" id="stat-total-items">0</div>
+                        <span class="text-[11px] text-fresh-600 font-medium"><i class="fa-solid fa-check mr-1"></i>Pełny stan ewidencji</span>
+                    </div>
+                    <div class="p-3 bg-slate-100 text-slate-600 rounded-lg text-xl">
+                        <i class="fa-solid fa-cart-flatbed"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Alert FEFO (&lt; 3 Dni)</span>
+                        <div class="text-2xl font-extrabold text-rose-600 mt-1" id="stat-critical-fefo">0</div>
+                        <span class="text-[11px] text-rose-600 font-medium"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Wymaga szybkiej reakcji</span>
+                    </div>
+                    <div class="p-3 bg-rose-50 text-rose-600 rounded-lg text-xl border border-rose-100">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Bliski Koniec (&lt; 7 Dni)</span>
+                        <div class="text-2xl font-extrabold text-amber-600 mt-1" id="stat-warning-fefo">0</div>
+                        <span class="text-[11px] text-amber-600 font-medium"><i class="fa-solid fa-tags mr-1"></i>Planuj przecenę</span>
+                    </div>
+                    <div class="p-3 bg-amber-50 text-amber-600 rounded-lg text-xl border border-amber-100">
+                        <i class="fa-solid fa-percent"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Strefy HACCP</span>
+                        <div class="text-2xl font-extrabold text-emerald-600 mt-1">100%</div>
+                        <span class="text-[11px] text-emerald-600 font-medium"><i class="fa-solid fa-circle-check mr-1"></i>Zgodne z normą Sanepid</span>
+                    </div>
+                    <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg text-xl border border-emerald-100">
+                        <i class="fa-solid fa-temperature-low"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warehouse Storage Zones & Capacity -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-base text-slate-800 flex items-center">
+                        <i class="fa-solid fa-warehouse text-fresh-600 mr-2"></i> Wykorzystanie Stref Przechowywania & Warunki Klimatyczne
+                    </h3>
+                    <span class="text-xs text-slate-400 font-mono">Sensory IoT Aktywne</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Zone 1 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-700"><i class="fa-solid fa-snowflake text-cyan-500 mr-1.5"></i> Mroźnia A (-18°C)</span>
+                            <span class="font-bold text-slate-900">78%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div class="bg-cyan-500 h-2 rounded-full" style="width: 78%"></div>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Mrożonki, ryby, lody. Ryzyko oszronienia: niskie.</p>
+                    </div>
+
+                    <!-- Zone 2 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-700"><i class="fa-solid fa-drumstick-bite text-rose-500 mr-1.5"></i> Chłodnia Mięso (0-2°C)</span>
+                            <span class="font-bold text-slate-900">62%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div class="bg-rose-500 h-2 rounded-full" style="width: 62%"></div>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Drobiowe, wieprzowe, wędliny paczkowane.</p>
+                    </div>
+
+                    <!-- Zone 3 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-700"><i class="fa-solid fa-cheese text-amber-500 mr-1.5"></i> Chłodnia Nabiał (2-6°C)</span>
+                            <span class="font-bold text-slate-900">89%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div class="bg-amber-500 h-2 rounded-full" style="width: 89%"></div>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Mleko, sery, jogurty, masło. Wysoki obrót.</p>
+                    </div>
+
+                    <!-- Zone 4 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-700"><i class="fa-solid fa-box text-slate-600 mr-1.5"></i> Magazyn Suchy (15-20°C)</span>
+                            <span class="font-bold text-slate-900">45%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div class="bg-slate-600 h-2 rounded-full" style="width: 45%"></div>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Mąki, makarony, konserwy, nasiona.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action FEFO Alert Widget -->
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-amber-500 text-white rounded-lg text-2xl shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-amber-900 text-sm">System FEFO wykrył 3 towary bliskie terminowi ważności</h4>
+                        <p class="text-xs text-amber-800 mt-0.5">Rekomendacja: Zastosuj rabat -30% lub przesuń towary na przód półki przed końcem dzisiejszej zmiany.</p>
+                    </div>
+                </div>
+                <button onclick="switchTab('fefo')" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition shrink-0">
+                    Przejdź do Strefy FEFO <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ================= TAB 2: PRODUCTS INVENTORY ================= -->
+        <section id="section-products" class="hidden space-y-4">
+            
+            <!-- Controls Bar -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                
+                <!-- Search -->
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="search-input" onkeyup="renderProductsTable()" placeholder="Szukaj nazwy, kodu EAN lub dostawcy..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                </div>
+
+                <!-- Filters & New Item Button -->
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+                    
+                    <select id="filter-category" onchange="renderProductsTable()" class="border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium bg-white text-slate-700 outline-none">
+                        <option value="all">Wszystkie kategorie</option>
+                        <option value="Nabiał">Nabiał & Sery</option>
+                        <option value="Mięso">Mięso & Wędliny</option>
+                        <option value="Owoce/Warzywa">Owoce & Warzywa</option>
+                        <option value="Mrożonki">Mrożonki</option>
+                        <option value="Pieczywo">Pieczywo</option>
+                        <option value="Suche">Produkty Suche</option>
+                    </select>
+
+                    <select id="filter-zone" onchange="renderProductsTable()" class="border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium bg-white text-slate-700 outline-none">
+                        <option value="all">Wszystkie strefy</option>
+                        <option value="Chłodnia">Chłodnia</option>
+                        <option value="Mroźnia">Mroźnia</option>
+                        <option value="Magazyn Suchy">Magazyn Suchy</option>
+                    </select>
+
+                    <button onclick="openAddModal()" class="bg-fresh-600 hover:bg-fresh-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Zamów / Dodaj Towar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Inventory Table -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200">
+                                <th class="py-3 px-4">Produkt / Kod EAN</th>
+                                <th class="py-3 px-4">Kategoria & Strefa</th>
+                                <th class="py-3 px-4">Ilość w Magazynie</th>
+                                <th class="py-3 px-4">Data Ważności</th>
+                                <th class="py-3 px-4">Wymagania Temp. (HACCP)</th>
+                                <th class="py-3 px-4">Status FEFO</th>
+                                <th class="py-3 px-4 text-right">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body" class="divide-y divide-slate-100 text-xs">
+                            <!-- JS Populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: FEFO & SHORT EXPIRY ZONE ================= -->
+        <section id="section-fefo" class="hidden space-y-6">
+            
+            <!-- FEFO Explanation Header -->
+            <div class="bg-gradient-to-r from-rose-600 to-amber-600 text-white rounded-xl p-6 shadow-sm">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div>
+                        <span class="bg-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Metoda FEFO (First Expired, First Out)</span>
+                        <h2 class="text-xl font-bold mt-2">Strefa Produktów Krótkoterminowych</h2>
+                        <p class="text-xs text-rose-100 mt-1 max-w-2xl">
+                            Towary w tej sekcji wymagają priorytetowego opuszczenia magazynu. Zastosuj automatyczną przecenę, przesuń na front ekspozycji lub przekaż do Banku Żywności, aby zapobiegać marnowaniu żywności.
+                        </p>
+                    </div>
+                    <button onclick="applyGlobalDiscount()" class="bg-white text-rose-700 hover:bg-rose-50 text-xs font-bold px-4 py-2.5 rounded-lg transition shadow-md shrink-0">
+                        <i class="fa-solid fa-percent mr-1.5"></i> Przecenił Wszystkie (-30%)
+                    </button>
+                </div>
+            </div>
+
+            <!-- FEFO Items Grid Cards -->
+            <div id="fefo-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- JS Populated -->
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: HACCP & FOOD SAFETY GUIDE ================= -->
+        <section id="section-haccp" class="hidden space-y-6">
+            
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 mb-2 flex items-center">
+                    <i class="fa-solid fa-shield-halved text-fresh-600 mr-2"></i> Przewodnik i Standardy Przechowywania Sanepid / HACCP
+                </h2>
+                <p class="text-xs text-slate-500 mb-6">
+                    Prawidłowe magazynowanie żywności zapobiega zakażeniom krzyżowym, rozwojowi bakterii (np. Salmonella, Listeria) oraz stratom towarowym.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- HACCP Standard 1 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 bg-rose-100 text-rose-700 rounded-lg text-lg">
+                                <i class="fa-solid fa-drumstick-bite"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800">Świeże Mięso i Drób</h4>
+                                <span class="text-[11px] font-mono text-rose-600 font-bold">Temperatura: 0°C do +2°C</span>
+                            </div>
+                        </div>
+                        <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+                            <li>Bezwzględne oddzielenie drobiu od mięsa czerwonego.</li>
+                            <li>Przechowywać na najniższych półkach (ochrona przed kapaniem).</li>
+                            <li>Kontrola wilgotności: 85-90%.</li>
+                        </ul>
+                    </div>
+
+                    <!-- HACCP Standard 2 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 bg-amber-100 text-amber-700 rounded-lg text-lg">
+                                <i class="fa-solid fa-cheese"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800">Nabiał i Sery Świeże</h4>
+                                <span class="text-[11px] font-mono text-amber-600 font-bold">Temperatura: +2°C do +6°C</span>
+                            </div>
+                        </div>
+                        <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+                            <li>Chronić przed obcymi zapachami (sery łatwo chłoną zapachy).</li>
+                            <li>Unikać gwałtownych skoków temperatur przy dostawie.</li>
+                            <li>Ścisła kontrola terminów przydatności (FEFO).</li>
+                        </ul>
+                    </div>
+
+                    <!-- HACCP Standard 3 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 bg-cyan-100 text-cyan-700 rounded-lg text-lg">
+                                <i class="fa-solid fa-snowflake"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800">Mrożonki i Głębokie Zamrażanie</h4>
+                                <span class="text-[11px] font-mono text-cyan-600 font-bold">Temperatura: poniżej -18°C</span>
+                            </div>
+                        </div>
+                        <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+                            <li>Brak możliwości ponownego zamrażania po rozmrożeniu.</li>
+                            <li>Regularne odszranianie komór chłodniczych.</li>
+                            <li>Pakowanie szczelne, zapobiegające oparzelinie mroźniczej.</li>
+                        </ul>
+                    </div>
+
+                    <!-- HACCP Standard 4 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 bg-emerald-100 text-emerald-700 rounded-lg text-lg">
+                                <i class="fa-solid fa-apple-whole"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800">Owoce i Warzywa Świeże</h4>
+                                <span class="text-[11px] font-mono text-emerald-600 font-bold">Temperatura: +8°C do +12°C</span>
+                            </div>
+                        </div>
+                        <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+                            <li>Separacja cytrusów i jabłek wydzielających etylen.</li>
+                            <li>Kontrolowana cyrkulacja powietrza.</li>
+                            <li>Usuwanie uszkodzonych sztuk w celu ochrony partii.</li>
+                        </ul>
+                    </div>
+
+                    <!-- HACCP Standard 5 -->
+                    <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2.5 bg-slate-200 text-slate-700 rounded-lg text-lg">
+                                <i class="fa-solid fa-box-archive"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800">Towary Suche i Konserwy</h4>
+                                <span class="text-[11px] font-mono text-slate-600 font-bold">Temperatura: +15°C do +25°C</span>
+                            </div>
+                        </div>
+                        <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+                            <li>Brak bezpośredniego kontaktu z podłogą (palety min. 15cm).</li>
+                            <li>Niska wilgotność powietrza (&lt;60%).</li>
+                            <li>Ochrona przed szkodnikami magazynowymi (np. mole).</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- MODAL: Zamawianie / Dodawanie Nowego Produktu -->
+    <div id="add-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-xl w-full">
+            
+            <div class="bg-fresh-900 text-white p-4 px-6 flex items-center justify-between rounded-t-xl">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-cart-plus text-fresh-400"></i>
+                    <h3 class="font-bold text-sm">Przyjęcie / Zamówienie Towaru</h3>
+                </div>
+                <button onclick="closeAddModal()" class="text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleAddProductSubmit(event)" class="p-6 space-y-4">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nazwa Artykułu *</label>
+                    <input type="text" id="form-name" required placeholder="np. Jogurt Naturalny 180g Bio" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kod EAN / SKU</label>
+                        <input type="text" id="form-ean" placeholder="590123456789" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kategoria *</label>
+                        <select id="form-category" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                            <option value="Nabiał">Nabiał & Sery</option>
+                            <option value="Mięso">Mięso & Wędliny</option>
+                            <option value="Owoce/Warzywa">Owoce & Warzywa</option>
+                            <option value="Mrożonki">Mrożonki</option>
+                            <option value="Pieczywo">Pieczywo</option>
+                            <option value="Suche">Produkty Suche</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ilość *</label>
+                        <input type="number" id="form-qty" required min="1" value="50" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jednostka</label>
+                        <select id="form-unit" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                            <option value="szt">szt (sztuki)</option>
+                            <option value="kg">kg (kilogramy)</option>
+                            <option value="L">L (litry)</option>
+                            <option value="zgrzewka">zgrzewka</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Strefa *</label>
+                        <select id="form-zone" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                            <option value="Chłodnia">Chłodnia</option>
+                            <option value="Mroźnia">Mroźnia</option>
+                            <option value="Magazyn Suchy">Magazyn Suchy</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Data Przydatności (FEFO) *</label>
+                        <input type="date" id="form-expiry" required class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dostawca / Producent</label>
+                        <input type="text" id="form-supplier" placeholder="np. Mlekpol / Bakoma" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-fresh-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end space-x-3 border-t border-slate-200">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-100 transition">Anuluj</button>
+                    <button type="submit" class="px-5 py-2 bg-fresh-600 hover:bg-fresh-700 text-white text-xs font-semibold rounded-lg transition shadow-sm">Zarejestruj Dostawę</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Mock Grocery Warehouse Items Database
+        let foodDatabase = [
+            {
+                id: "PRD-101",
+                name: "Mleko Świeże 3.2% 1L",
+                ean: "5900123001122",
+                category: "Nabiał",
+                qty: 120,
+                unit: "szt",
+                zone: "Chłodnia",
+                expiryDate: getRelativeDate(2), // 2 days left (CRITICAL FEFO)
+                supplier: "Mlekpol",
+                haccpTemp: "+2°C do +6°C",
+                discount: 0
+            },
+            {
+                id: "PRD-102",
+                name: "Filet z Piersi Kurczaka 1kg",
+                ean: "5900123005544",
+                category: "Mięso",
+                qty: 45,
+                unit: "kg",
+                zone: "Chłodnia",
+                expiryDate: getRelativeDate(1), // 1 day left (CRITICAL FEFO)
+                supplier: "Drobex",
+                haccpTemp: "0°C do +2°C",
+                discount: 0
+            },
+            {
+                id: "PRD-103",
+                name: "Ser Twaróg Półtłusty 250g",
+                ean: "5900123009988",
+                category: "Nabiał",
+                qty: 80,
+                unit: "szt",
+                zone: "Chłodnia",
+                expiryDate: getRelativeDate(5), // 5 days left (WARNING FEFO)
+                supplier: "Piątnica",
+                haccpTemp: "+2°C do +6°C",
+                discount: 0
+            },
+            {
+                id: "PRD-104",
+                name: "Warzywa na Patelnię Mrożone 450g",
+                ean: "5900123011122",
+                category: "Mrożonki",
+                qty: 210,
+                unit: "szt",
+                zone: "Mroźnia",
+                expiryDate: getRelativeDate(180), // Safe
+                supplier: "Hortex",
+                haccpTemp: "poniżej -18°C",
+                discount: 0
+            },
+            {
+                id: "PRD-105",
+                name: "Chleb Wiejski Żytni 500g",
+                ean: "5900123033311",
+                category: "Pieczywo",
+                qty: 30,
+                unit: "szt",
+                zone: "Magazyn Suchy",
+                expiryDate: getRelativeDate(2), // 2 days left (CRITICAL)
+                supplier: "Piekarnia Cechowa",
+                haccpTemp: "Temp. pokojowa",
+                discount: 0
+            },
+            {
+                id: "PRD-106",
+                name: "Mąka Pszenna Typ 500 1kg",
+                ean: "5900123077744",
+                category: "Suche",
+                qty: 400,
+                unit: "kg",
+                zone: "Magazyn Suchy",
+                expiryDate: getRelativeDate(240), // Safe
+                supplier: "Lubella",
+                haccpTemp: "+15°C do +25°C",
+                discount: 0
+            }
+        ];
+
+        // Helper to generate dates relative to today
+        function getRelativeDate(daysFromNow) {
+            const date = new Date();
+            date.setDate(date.getDate() + daysFromNow);
+            return date.toISOString().split('T')[0];
+        }
+
+        // Calculate Days Remaining
+        function getDaysRemaining(expiryDateStr) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const expiry = new Date(expiryDateStr);
+            expiry.setHours(0,0,0,0);
+            const diffTime = expiry - today;
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        // Init App
+        window.onload = function() {
+            renderProductsTable();
+            renderFefoCards();
+            updateDashboardStats();
+            
+            // Set default date for modal (7 days ahead)
+            document.getElementById('form-expiry').value = getRelativeDate(7);
+        };
+
+        // Tab Switcher
+        function switchTab(tabName) {
+            const tabs = ['dashboard', 'products', 'fefo', 'haccp'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('active');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // Render Inventory Table
+        function renderProductsTable() {
+            const tbody = document.getElementById('inventory-table-body');
+            tbody.innerHTML = '';
+
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            const catVal = document.getElementById('filter-category').value;
+            const zoneVal = document.getElementById('filter-zone').value;
+
+            foodDatabase.forEach(item => {
+                const daysLeft = getDaysRemaining(item.expiryDate);
+
+                const matchesSearch = item.name.toLowerCase().includes(searchVal) || item.ean.includes(searchVal) || item.supplier.toLowerCase().includes(searchVal);
+                const matchesCat = catVal === 'all' || item.category === catVal;
+                const matchesZone = zoneVal === 'all' || item.zone === zoneVal;
+
+                if (matchesSearch && matchesCat && matchesZone) {
+                    let badgeHTML = '';
+                    if (daysLeft <= 3) {
+                        badgeHTML = `<span class="bg-rose-100 text-rose-800 border border-rose-300 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-triangle-exclamation mr-1"></i>FEFO: ${daysLeft} dni</span>`;
+                    } else if (daysLeft <= 7) {
+                        badgeHTML = `<span class="bg-amber-100 text-amber-800 border border-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-clock mr-1"></i>Blisko: ${daysLeft} dni</span>`;
+                    } else {
+                        badgeHTML = `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-check mr-1"></i>W normie (${daysLeft}d)</span>`;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                    tr.innerHTML = `
+                        <td class="py-3 px-4">
+                            <div class="font-bold text-slate-900">${item.name}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">EAN: ${item.ean} | Dostawca: ${item.supplier}</div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="font-semibold text-slate-700">${item.category}</span>
+                            <div class="text-[10px] text-slate-400">${item.zone}</div>
+                        </td>
+                        <td class="py-3 px-4 font-bold text-slate-800">
+                            ${item.qty} ${item.unit}
+                        </td>
+                        <td class="py-3 px-4 font-mono text-xs">
+                            ${item.expiryDate}
+                        </td>
+                        <td class="py-3 px-4 text-slate-600 font-mono text-[11px]">
+                            ${item.haccpTemp}
+                        </td>
+                        <td class="py-3 px-4">
+                            ${badgeHTML}
+                            ${item.discount > 0 ? `<span class="ml-1 bg-rose-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">-${item.discount}%</span>` : ''}
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            <button onclick="deleteProduct('${item.id}')" class="text-slate-400 hover:text-rose-600 p-1 transition" title="Usuń z magazynu">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+        }
+
+        // Render FEFO Short Expiry Cards
+        function renderFefoCards() {
+            const container = document.getElementById('fefo-cards-container');
+            container.innerHTML = '';
+
+            const fefoItems = foodDatabase.filter(item => getDaysRemaining(item.expiryDate) <= 7);
+            document.getElementById('fefo-badge-count').textContent = fefoItems.length;
+
+            if (fefoItems.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-3 text-center py-12 text-slate-400">
+                        <i class="fa-solid fa-circle-check text-4xl text-emerald-500 mb-2"></i>
+                        <p class="text-sm font-bold">Brak towarów o krótkim terminie ważności.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            fefoItems.forEach(item => {
+                const daysLeft = getDaysRemaining(item.expiryDate);
+
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4 relative overflow-hidden";
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${item.category} • ${item.zone}</span>
+                            <h4 class="font-bold text-slate-900 text-base leading-tight mt-0.5">${item.name}</h4>
+                            <p class="text-xs text-slate-500 mt-0.5">Ilość: <b>${item.qty} ${item.unit}</b></p>
+                        </div>
+                        <span class="bg-rose-100 text-rose-800 text-xs font-bold px-2.5 py-1 rounded-full border border-rose-200">
+                            ${daysLeft <= 0 ? 'Wygasło!' : `${daysLeft} dni do końca`}
+                        </span>
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-lg text-xs space-y-1">
+                        <div class="flex justify-between text-slate-600">
+                            <span>Data ważności:</span>
+                            <b class="font-mono text-slate-800">${item.expiryDate}</b>
+                        </div>
+                        <div class="flex justify-between text-slate-600">
+                            <span>Aktualny Rabat FEFO:</span>
+                            <b class="text-rose-600">${item.discount > 0 ? `-${item.discount}%` : 'Brak (0%)'}</b>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button onclick="applyDiscount('${item.id}', 30)" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-percent"></i>
+                            <span>Rabat -30%</span>
+                        </button>
+                        <button onclick="applyDiscount('${item.id}', 50)" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-tags"></i>
+                            <span>Rabat -50%</span>
+                        </button>
+                    </div>
+
+                    <button onclick="donateFood('${item.id}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2 rounded-lg transition flex items-center justify-center space-x-1.5">
+                        <i class="fa-solid fa-hand-holding-heart text-fresh-600"></i>
+                        <span>Przekaż do Banku Żywności</span>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Apply discount to single item
+        function applyDiscount(itemId, percent) {
+            const item = foodDatabase.find(i => i.id === itemId);
+            if (item) {
+                item.discount = percent;
+                showToast("Zastosowano Rabat", `Przeceniono ${item.name} o -${percent}%. Kod wyprzedażowy wydrukowany.`);
+                renderProductsTable();
+                renderFefoCards();
+            }
+        }
+
+        // Apply 30% discount to all FEFO items
+        function applyGlobalDiscount() {
+            foodDatabase.forEach(item => {
+                if (getDaysRemaining(item.expiryDate) <= 7) {
+                    item.discount = 30;
+                }
+            });
+            showToast("Przecena Zbiorcza", "Nałożono rabat -30% na wszystkie towary w strefie FEFO.");
+            renderProductsTable();
+            renderFefoCards();
+        }
+
+        // Donate food
+        function donateFood(itemId) {
+            const item = foodDatabase.find(i => i.id === itemId);
+            if (item) {
+                foodDatabase = foodDatabase.filter(i => i.id !== itemId);
+                showToast("Przekazano Darowiznę", `${item.name} został zgłoszony do odbioru przez lokalny Bank Żywności.`);
+                renderProductsTable();
+                renderFefoCards();
+                updateDashboardStats();
+            }
+        }
+
+        // Delete product
+        function deleteProduct(itemId) {
+            foodDatabase = foodDatabase.filter(i => i.id !== itemId);
+            renderProductsTable();
+            renderFefoCards();
+            updateDashboardStats();
+            showToast("Usunięto Towar", "Produkt został usunięty z ewidencji magazynowej.");
+        }
+
+        // Update Stats
+        function updateDashboardStats() {
+            document.getElementById('stat-total-items').textContent = foodDatabase.length;
+            
+            const critical = foodDatabase.filter(i => getDaysRemaining(i.expiryDate) <= 3).length;
+            const warning = foodDatabase.filter(i => {
+                const d = getDaysRemaining(i.expiryDate);
+                return d > 3 && d <= 7;
+            }).length;
+
+            document.getElementById('stat-critical-fefo').textContent = critical;
+            document.getElementById('stat-warning-fefo').textContent = warning;
+        }
+
+        // Add Product Form
+        function openAddModal() {
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+
+        function handleAddProductSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('form-name').value;
+            const ean = document.getElementById('form-ean').value || "590" + Math.floor(100000000 + Math.random() * 900000000);
+            const category = document.getElementById('form-category').value;
+            const qty = parseFloat(document.getElementById('form-qty').value);
+            const unit = document.getElementById('form-unit').value;
+            const zone = document.getElementById('form-zone').value;
+            const expiryDate = document.getElementById('form-expiry').value;
+            const supplier = document.getElementById('form-supplier').value || "Dostawca Główny";
+
+            let haccpTemp = "+15°C do +25°C";
+            if (zone === "Chłodnia") haccpTemp = "+2°C do +6°C";
+            if (zone === "Mroźnia") haccpTemp = "poniżej -18°C";
+
+            const newProduct = {
+                id: `PRD-${foodDatabase.length + 101}`,
+                name,
+                ean,
+                category,
+                qty,
+                unit,
+                zone,
+                expiryDate,
+                supplier,
+                haccpTemp,
+                discount: 0
+            };
+
+            foodDatabase.unshift(newProduct);
+            renderProductsTable();
+            renderFefoCards();
+            updateDashboardStats();
+            closeAddModal();
+
+            showToast("Przyjęto Towar", `Dodano ${name} (${qty} ${unit}) do strefy ${zone}.`);
+        }
+
+        // Trigger SMS/E-mail Notifications
+        function triggerAlertNotification() {
+            const criticalCount = foodDatabase.filter(i => getDaysRemaining(i.expiryDate) <= 3).length;
+            showToast("Wysłano Alerty SMS/E-mail", `Powiadomiono kierownika zmiany o ${criticalCount} krytycznych pozycjach FEFO.`);
+        }
+
+        // Toast Messages
+        function showToast(title, message) {
+            const banner = document.getElementById('toast-banner');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-message').textContent = message;
+            
+            banner.classList.remove('hidden');
+            setTimeout(() => {
+                hideToast();
+            }, 4000);
+        }
+
+        function hideToast() {
+            document.getElementById('toast-banner').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
