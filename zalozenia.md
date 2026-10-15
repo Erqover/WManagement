@@ -5,7 +5,6 @@ Magazyn chemicznych odczynników labolatorium:
  - ilość składowanego produktu w odpowiednich jednostkach w zależności od stanu skupienia
  - informacja o sposobie przechowywania próbki, ilość zapełnienia magazynu na bieżąco uzupełniana 
  - różne typy dostępu - np. jedynie kierownik może zamawiać i zarządzać bardziej niebezpiecznymi odczynnikami
- - 
 
 Magazyn spożywczy np. sklepu spożywczego
  - zamawianie, składowanie i zarządzanie produktami spożywczymi
