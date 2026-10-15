@@ -22,11 +22,12 @@ Projekt realizowany w metodyce **Specification-Driven Development (SDD)** w opar
 ## Makiety prototypu
 
 Wizualna koncepcja interfejsu została podzielona na trzy główne ekrany:
-* **Biurko dyspozytora (![[docs/prototypes/01_desktop.png]]):** główny widok gry z zegarem, manifestem, dziennikiem reguł i stemplami decyzyjnymi.
-
-* **Wnętrze naczepy (![[docs/prototypes/02_truck_inside.png]]):** podgląd ładunku umożliwiający inspekcję skrzyń i beczek.
-
-* **Raport końcowy (![[docs/prototypes/03_end_report.png]]):** podsumowanie finansowe po zakończeniu 5-minutowej zmiany.
+* **Biurko dyspozytora:** główny widok gry z zegarem, manifestem, dziennikiem reguł i stemplami decyzyjnymi.
+![Biurko dyspozytora](docs/prototypes/01_desktop.png)
+* **Wnętrze naczepy:** podgląd ładunku umożliwiający inspekcję skrzyń i beczek.
+![Wnętrze naczepy](docs/prototypes/02_truck_inside.png)
+* **Raport końcowy:** podsumowanie finansowe po zakończeniu 5-minutowej zmiany.
+![Raport końcowy](docs/prototypes/03_end_report.png)
 ---
 ## Struktura dokumentacji
 ```text

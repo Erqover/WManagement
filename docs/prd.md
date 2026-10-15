@@ -45,6 +45,6 @@ Wymagania jakościowe powiązano z mierzalnymi wskaźnikami inżynierskimi:
 ## 5. Powiązanie z diagramami
 
 * Przypadki użycia (kto co robi w systemie) zostały zdefiniowane w [diagramie UML](./diagrams/use-cases.png):
-![[./diagrams/use-cases.png]]
-* Zależności między wymaganiami a metrykami SQuaRE przedstawiono w [diagramie SysML](./diagrams/sysml-requirements.png): 
-![[./diagrams/sysml-requirements.png]]
+![diagramie UML](./diagrams/use-cases.png)
+* Zależności między wymaganiami a metrykami SQuaRE przedstawiono w [diagramie SysML](./diagrams/sysml-requirements.png):
+![diagramie SysML](./diagrams/sysml-requirements.png)
