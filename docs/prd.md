@@ -35,10 +35,10 @@ Wymagania jakościowe powiązano z mierzalnymi wskaźnikami inżynierskimi:
 
 |      ID       | Kategoria ISO              | Wymaganie                                                                   | Metryka i cel                        |
 | :-----------: | :--------------------------: | :--------------------------------------------------------------------------- | :-----------------------------------: |
-| **REQ-NFR01** | **Performance Efficiency** | Płynne stemplowanie i ładowanie nowej naczepy bez widocznego zacięcia.      | **Latency (p95) $\le 150text{ ms}$** |
-| **REQ-NFR02** | **Reliability**            | Stabilność działania aplikacji podczas sesji bez krytycznych crashy.        | **MTBF $\ge 720text{ h}$**           |
+| **REQ-NFR01** | **Performance Efficiency** | Płynne stemplowanie i ładowanie nowej naczepy bez widocznego zacięcia.      | **Latency (p95) $\le 150\text{ ms}$** |
+| **REQ-NFR02** | **Reliability**            | Stabilność działania aplikacji podczas sesji bez krytycznych crashy.        | **MTBF $\ge 720\text{ h}$**           |
 | **REQ-NFR03** | **Reliability**            | Dostępność serwera i logiki reguł dla użytkownika.                          | **Availability $\ge 99.5%$**         |
-| **REQ-NFR04** | **Reliability**            | Czas automatycznego restartu środowiska i powrotu do stanu sesji po awarii. | **MTTR $\le 30text{ s}$**            |
+| **REQ-NFR04** | **Reliability**            | Czas automatycznego restartu środowiska i powrotu do stanu sesji po awarii. | **MTTR $\le 30\text{ s}$**            |
 
 ---
 
