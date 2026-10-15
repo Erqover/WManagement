@@ -26,7 +26,7 @@ Aktualny etap skupia się na specyfikacji i makietach wizualnych. Prototyp skła
 | **REQ-F04** | Inspekcja ładunku | US-04 | Przełączenie widoku na naczepę i sprawdzanie etykiet (kody partii, daty, ADR). |
 | **REQ-F05** | Raport dobowy | US-05 | Wyliczenie salda gracza (podstawa + premie - kary) po zakończeniu zmiany. |
 
-*Szczegółowe kryteria akceptacji (Given-When-Then) i priorytety MoSCoW znajdują się w [pliku](./auser-stories.md).*
+*Szczegółowe kryteria akceptacji (Given-When-Then) i priorytety MoSCoW znajdują się w [pliku](./user-stories.md).*
 
 ---
 
