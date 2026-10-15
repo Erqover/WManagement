@@ -31,14 +31,14 @@ Wizualna koncepcja interfejsu została podzielona na trzy główne ekrany:
 ## Struktura dokumentacji
 ```text
 ├── docs/
-│   ├── prd.md                    # Wymagania biznesowe, funkcjonalne i NFR wg ISO/IEC 25002
-│   ├── user-stories.md           # 5x User Stories
+│   ├── prd.md                     # Wymagania biznesowe, funkcjonalne i NFR wg ISO/IEC 25002
+│   ├── user-stories.md            # 5x User Stories
 │   ├── diagrams/
-│   │   ├── use-case.png          # Diagram przypadków użycia UML
+│   │   ├── use-case.png           # Diagram przypadków użycia UML
 │   │   └── sysml-requirements.png # Diagram wymagań SysML
 │   └── prototypes/
-│       ├── 01\_desktop.png        # Widok biurka
-│       ├── 02\_truck\_interior.png # Widok paki
-│       └── 03\_end\_report.png     # Raport dzienny
+│       ├── 01_desktop.png         # Widok biurka
+│       ├── 02_truck_inside.png    # Widok paki
+│       └── 03_end_report.png      # Raport dzienny
 └── README.md
 ```
