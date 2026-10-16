@@ -1,6 +1,6 @@
 ### US-01: Zarządzanie czasem
 
-* **Priorytet (MoSCoW):** Must Have
+* **Priorytet:** Must Have
 * **Estymacja:** 2 Story Points
 
 **Jako** gracz,  
@@ -15,7 +15,7 @@
 ---
 
 ### US-02: Sprawdzenie poprawności dostarczonych produktów
-* **Priorytet (MoSCoW):** Must Have
+* **Priorytet :** Must Have
 * **Estymacja:** 3 Story Points
 
 **Jako** gracz,  
@@ -30,7 +30,7 @@
 ---
 
 ### US-03: Podejmowanie decyzji – stemple
-* **Priorytet (MoSCoW):** Must Have
+* **Priorytet :** Must Have
 * **Estymacja:** 5 Story Points
 
 **Jako** gracz,  
@@ -45,7 +45,7 @@
 ---
 
 ### US-04: Weryfikacja szczegółów ładunku
-* **Priorytet (MoSCoW):** Could Have
+* **Priorytet :** Could Have
 * **Estymacja:** 8 Story Points
 
 **Jako** gracz,  
@@ -60,7 +60,7 @@
 ---
 
 ### US-05: Otrzymywanie informacji zwrotnej (Raport końcowy)
-* **Priorytet (MoSCoW):** Should Have
+* **Priorytet :** Should Have
 * **Estymacja:** 3 Story Points
 
 **Jako** gracz,  
