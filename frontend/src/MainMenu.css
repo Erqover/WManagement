@@ -1,0 +1,245 @@
+/* GŁÓWNY KONTENER EKRANU */
+.menu-screen {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0d1110;
+    font-family: 'VT323', monospace;
+    color: #e0e0e0;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* LEWY I PRAWY PANEL (WIDOK BIURKA W TLE) */
+.side-panel {
+    flex: 1;
+    position: relative;
+    background:
+        radial-gradient(circle at center, rgba(16, 185, 129, 0.05) 0%, transparent 70%),
+        linear-gradient(135deg, #141a18 25%, #0e1311 100%);
+    border-right: 1px solid #1f2d26;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.right-panel {
+    border-right: none;
+    border-left: 1px solid #1f2d26;
+}
+
+/* DEKORACJE PRZEMYSŁOWE PO BOKACH */
+.industrial-decal {
+    border: 1px dashed #2d4537;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    font-size: 18px;
+    color: #4ade80;
+    letter-spacing: 1px;
+}
+
+.warning-box {
+    border: 2px solid #eab308;
+    color: #eab308;
+    padding: 8px 12px;
+    font-size: 20px;
+    background: rgba(234, 179, 8, 0.05);
+    display: inline-block;
+}
+
+/* ŚRODKOWY PANEL MENU */
+.center-panel {
+    width: 440px;
+    background-color: rgba(10, 15, 13, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 40px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(16, 185, 129, 0.08);
+}
+
+/* PASY OSTRZEGAWCZE (BORDERY ŚRODKA) */
+.center-panel::before,
+.center-panel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    background: repeating-linear-gradient(-45deg,
+            #eab308,
+            #eab308 10px,
+            #1c1917 10px,
+            #1c1917 20px);
+}
+
+.center-panel::before {
+    left: 0;
+}
+
+.center-panel::after {
+    right: 0;
+}
+
+/* LOGO I TYTUŁ */
+.title-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.flask-icon {
+    font-size: 42px;
+    filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.8));
+}
+
+.game-title {
+    font-size: 64px;
+    letter-spacing: 4px;
+    color: #facc15;
+    text-shadow: 0 0 12px rgba(250, 204, 21, 0.4), 3px 3px 0px #000;
+    margin: 0;
+}
+
+.game-subtitle {
+    font-size: 20px;
+    color: #6ee7b7;
+    letter-spacing: 2px;
+    margin-bottom: 48px;
+    text-transform: uppercase;
+}
+
+/* PRZYCISKI */
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.pixel-btn {
+    font-family: 'VT323', monospace;
+    font-size: 28px;
+    letter-spacing: 2px;
+    padding: 12px 24px;
+    background: #18221e;
+    color: #f1f5f9;
+    border: 2px solid #2d4537;
+    box-shadow: 4px 4px 0px #000;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    text-align: center;
+}
+
+.pixel-btn:hover {
+    background: #23342d;
+    border-color: #4ade80;
+    color: #4ade80;
+    box-shadow: 2px 2px 0px #000;
+    transform: translate(2px, 2px);
+}
+
+/* Wariant z pasami dla Nowej Gry */
+.pixel-btn-primary {
+    border-color: #eab308;
+    color: #fef08a;
+}
+
+.pixel-btn-primary:hover {
+    background: #2a2410;
+    border-color: #facc15;
+    color: #facc15;
+}
+
+/* Przycisk Wyjścia */
+.pixel-btn-quit {
+    border-color: #7f1d1d;
+    color: #fca5a5;
+    background: #1c1313;
+}
+
+.pixel-btn-quit:hover {
+    background: #2d1616;
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* DOLNY STANOWISKOWY FOOTER */
+.station-footer {
+    position: absolute;
+    bottom: 16px;
+    font-size: 16px;
+    color: #4b6354;
+    letter-spacing: 1px;
+}
+
+/* WIERSZ POJEDYNCZEGO SLOTU */
+.slot-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+}
+
+.slot-main-btn {
+    flex: 1;
+}
+
+/* KONTENER AKCJI / KOSZA */
+.slot-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* MAŁE PRZYCISKI AKCJI (KOSZ, X, FAJKA) */
+.action-btn {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    background: #18221e;
+    color: #f1f5f9;
+    border: 2px solid #2d4537;
+    box-shadow: 2px 2px 0px #000;
+    cursor: pointer;
+    padding: 0 14px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease;
+}
+
+.action-btn:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px #000;
+}
+
+.action-trash:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: #2d1616;
+}
+
+.action-confirm {
+    border-color: #22c55e;
+    color: #22c55e;
+    background: #112818;
+}
+
+.action-confirm:hover {
+    background: #164020;
+}
+
+.action-cancel {
+    border-color: #ef4444;
+    color: #ef4444;
+    background: #2d1616;
+}
+
+.action-cancel:hover {
+    background: #421b1b;
+}

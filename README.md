@@ -43,3 +43,14 @@ Wizualna koncepcja interfejsu została podzielona na trzy główne ekrany:
 │       └── 03_end_report.png      # Raport dzienny
 └── README.md
 ```
+
+
+## Uruchomienie backendu
+
+(będąc w /backend)
+docker compose up --build
+
+
+## Uruchomienie frontendu
+
+npm run electron:dev
