@@ -15,21 +15,23 @@ function createWindow() {
         },
     });
 
-    const startUrl = process.env.ELECTRON_START_URL || `file://${path.join(__dirname, '../dist/index.html')}`;
+    const startUrl =
+        process.env.ELECTRON_START_URL ||
+        `file://${path.join(__dirname, '../dist/index.html')}`;
     win.loadURL(startUrl);
 }
 
 ipcMain.on('app:quit', () => {
     app.quit();
-})
+});
 
 app.whenReady().then(() => {
     createWindow();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    })
-})
+    });
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();

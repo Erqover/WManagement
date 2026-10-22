@@ -14,12 +14,12 @@ export default function MainMenu({ onNewGame, onContinue }) {
         <div className="menu-screen">
             {/* LEWA KOLUMNA: BIURKO / DOKUMENTACJA */}
             <div className="side-panel">
-                <div className="warning-box">
-                    [!] STREFA KONTROLI HAZMAT
-                </div>
+                <div className="warning-box">[!] STREFA KONTROLI HAZMAT</div>
                 <div className="industrial-decal">
-                    SEKTOR 04-B<br />
-                    PROCEDURA REJESTRACJI DOSTAW CHEMICZNYCH<br />
+                    SEKTOR 04-B
+                    <br />
+                    PROCEDURA REJESTRACJI DOSTAW CHEMICZNYCH
+                    <br />
                     ZGODNOŚĆ: ISO/IEC 25002
                 </div>
             </div>
@@ -33,7 +33,10 @@ export default function MainMenu({ onNewGame, onContinue }) {
                 <div className="game-subtitle">SYS. KONTROLI SKŁADU v0.1</div>
 
                 <div className="menu-buttons">
-                    <button className="pixel-btn pixel-btn-primary" onClick={onNewGame}>
+                    <button
+                        className="pixel-btn pixel-btn-primary"
+                        onClick={onNewGame}
+                    >
                         NOWA GRA
                     </button>
 
@@ -41,7 +44,10 @@ export default function MainMenu({ onNewGame, onContinue }) {
                         KONTYNUUJ
                     </button>
 
-                    <button className="pixel-btn pixel-btn-quit" onClick={handleQuit}>
+                    <button
+                        className="pixel-btn pixel-btn-quit"
+                        onClick={handleQuit}
+                    >
                         WYJDŹ Z GRY
                     </button>
                 </div>
@@ -53,12 +59,17 @@ export default function MainMenu({ onNewGame, onContinue }) {
 
             {/* PRAWA KOLUMNA: MAGAZYN / ZASOBNIKI */}
             <div className="side-panel right-panel">
-                <div className="warning-box" style={{ borderColor: '#ef4444', color: '#ef4444' }}>
+                <div
+                    className="warning-box"
+                    style={{ borderColor: '#ef4444', color: '#ef4444' }}
+                >
                     UWAGA: ODPADY TOKSYCZNE
                 </div>
                 <div className="industrial-decal">
-                    STATUS APARATURY: AKTYWNY<br />
-                    DETEKTOR SKAŻEŃ: NORMA [0.0 ppm]<br />
+                    STATUS APARATURY: AKTYWNY
+                    <br />
+                    DETEKTOR SKAŻEŃ: NORMA [0.0 ppm]
+                    <br />
                     POJEMNIKI W TRAKCIE ROZŁADUNKU
                 </div>
             </div>

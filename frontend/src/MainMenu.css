@@ -15,7 +15,11 @@
     flex: 1;
     position: relative;
     background:
-        radial-gradient(circle at center, rgba(16, 185, 129, 0.05) 0%, transparent 70%),
+        radial-gradient(
+            circle at center,
+            rgba(16, 185, 129, 0.05) 0%,
+            transparent 70%
+        ),
         linear-gradient(135deg, #141a18 25%, #0e1311 100%);
     border-right: 1px solid #1f2d26;
     padding: 40px;
@@ -58,7 +62,9 @@
     justify-content: center;
     position: relative;
     padding: 40px;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(16, 185, 129, 0.08);
+    box-shadow:
+        0 0 50px rgba(0, 0, 0, 0.8),
+        inset 0 0 30px rgba(16, 185, 129, 0.08);
 }
 
 /* PASY OSTRZEGAWCZE (BORDERY ŚRODKA) */
@@ -69,11 +75,13 @@
     top: 0;
     bottom: 0;
     width: 14px;
-    background: repeating-linear-gradient(-45deg,
-            #eab308,
-            #eab308 10px,
-            #1c1917 10px,
-            #1c1917 20px);
+    background: repeating-linear-gradient(
+        -45deg,
+        #eab308,
+        #eab308 10px,
+        #1c1917 10px,
+        #1c1917 20px
+    );
 }
 
 .center-panel::before {
@@ -101,7 +109,9 @@
     font-size: 64px;
     letter-spacing: 4px;
     color: #facc15;
-    text-shadow: 0 0 12px rgba(250, 204, 21, 0.4), 3px 3px 0px #000;
+    text-shadow:
+        0 0 12px rgba(250, 204, 21, 0.4),
+        3px 3px 0px #000;
     margin: 0;
 }
 

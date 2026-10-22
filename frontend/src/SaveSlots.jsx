@@ -25,11 +25,14 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
 
     const handleStartSave = async (slotId) => {
         try {
-            const response = await fetch('http://localhost:5000/api/saves/new', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slotId }),
-            });
+            const response = await fetch(
+                'http://localhost:5000/api/saves/new',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slotId }),
+                }
+            );
             const data = await response.json();
             onSelectSlot(data);
         } catch {
@@ -39,14 +42,16 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
 
     const handleDeleteSave = async (slotId) => {
         try {
-            await fetch(`http://localhost:5000/api/saves/${slotId}`, { method: 'DELETE' })
+            await fetch(`http://localhost:5000/api/saves/${slotId}`, {
+                method: 'DELETE',
+            });
             setSlots((prev) => ({ ...prev, [slotId]: null }));
         } catch (err) {
             console.error('Blad usuwania zapisu: ', err);
         } finally {
-            setConfirmingSlot(null)
+            setConfirmingSlot(null);
         }
-    }
+    };
 
     return (
         <div
@@ -56,14 +61,24 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
                 justifyContent: 'center',
                 alignItems: 'center',
                 width: '100vw',
-                height: '100vh'
+                height: '100vh',
             }}
         >
             <div className="center-panel" style={{ width: '560px' }}>
-                <h2 className="game-title" style={{ fontSize: '38px', marginBottom: '8px', textAlign: 'center' }}>
+                <h2
+                    className="game-title"
+                    style={{
+                        fontSize: '38px',
+                        marginBottom: '8px',
+                        textAlign: 'center',
+                    }}
+                >
                     REJESTR ZMIAN
                 </h2>
-                <div className="game-subtitle" style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div
+                    className="game-subtitle"
+                    style={{ textAlign: 'center', marginBottom: '32px' }}
+                >
                     WYBIERZ PROFIL ZAPISU
                 </div>
 
@@ -78,10 +93,19 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
                                 <button
                                     className="pixel-btn slot-main-btn"
                                     onClick={() => handleStartSave(id)}
-                                    style={{ textAlign: 'center', padding: '16px 20px' }}
+                                    style={{
+                                        textAlign: 'center',
+                                        padding: '16px 20px',
+                                    }}
                                 >
                                     <div>SLOT 0{id}</div>
-                                    <div style={{ fontSize: '18px', color: '#6ee7b7', marginTop: '6px' }}>
+                                    <div
+                                        style={{
+                                            fontSize: '18px',
+                                            color: '#6ee7b7',
+                                            marginTop: '6px',
+                                        }}
+                                    >
                                         {save
                                             ? `DZIEŃ: ${save.current_day} | SALDO: ${save.balance} $`
                                             : '[ PUSTY SLOT ]'}
@@ -95,7 +119,9 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
                                             <button
                                                 className="action-btn action-trash"
                                                 title="Usuń zapis"
-                                                onClick={() => setConfirmingSlot(id)}
+                                                onClick={() =>
+                                                    setConfirmingSlot(id)
+                                                }
                                             >
                                                 🗑️
                                             </button>
@@ -105,7 +131,9 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
                                                 <button
                                                     className="action-btn action-confirm"
                                                     title="Potwierdź usunięcie"
-                                                    onClick={() => handleDeleteSave(id)}
+                                                    onClick={() =>
+                                                        handleDeleteSave(id)
+                                                    }
                                                 >
                                                     ✓
                                                 </button>
@@ -113,7 +141,9 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
                                                 <button
                                                     className="action-btn action-cancel"
                                                     title="Anuluj"
-                                                    onClick={() => setConfirmingSlot(null)}
+                                                    onClick={() =>
+                                                        setConfirmingSlot(null)
+                                                    }
                                                 >
                                                     ✕
                                                 </button>

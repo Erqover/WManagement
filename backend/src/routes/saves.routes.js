@@ -1,19 +1,21 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
 
 //pobieramy polaczenie z baza
 
-const db = require('../db')
+const db = require('../db');
 
 router.get('/', async (req, res) => {
     try {
-        const result = await db.query('SELECT * FROM game_saves ORDER BY slot_id ASC;');
+        const result = await db.query(
+            'SELECT * FROM game_saves ORDER BY slot_id ASC;'
+        );
         res.json(result.rows);
     } catch (err) {
         console.error('Blad pobierania slotow: ', err);
         res.status(500).json({ error: 'Błąd bazy danych' });
     }
-})
+});
 
 //POST /api/saves/new
 
@@ -21,7 +23,9 @@ router.post('/new', async (req, res) => {
     const { slotId } = req.body;
 
     if (!slotId || slotId < 1 || slotId > 3) {
-        return res.status(400).json({ error: 'Nieprawidłowy slot (musi być 1, 2 lub 3)' });
+        return res
+            .status(400)
+            .json({ error: 'Nieprawidłowy slot (musi być 1, 2 lub 3)' });
     }
 
     try {
@@ -51,12 +55,11 @@ router.delete('/:slotId', async (req, res) => {
     const { slotId } = req.params;
     try {
         await db.query('DELETE FROM game_saves WHERE slot_id = $1', [slotId]);
-        res.json({ message: `Slot ${slotId} został wyczyszczony` })
+        res.json({ message: `Slot ${slotId} został wyczyszczony` });
     } catch (err) {
         console.error('Blad usuwania slotu:', err.message);
-        res.status(500).json({ error: 'Blad bazy danych przy usuwaniu' })
+        res.status(500).json({ error: 'Blad bazy danych przy usuwaniu' });
     }
-})
-
+});
 
 module.exports = router;

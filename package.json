@@ -1,27 +1,27 @@
 {
-  "name": "wmanagment",
-  "version": "1.0.0",
-  "description": "Projekt symulatora pracy magazyniera przyjmującego dostawy towarów (mechanika w stylu *Papers, Please*). Gracz wciela się w pracownika rampy, którego zadaniem jest weryfikacja dokumentów przewozowych, sprawdzanie towaru i podejmowanie decyzji o przyjęciu lub odrzuceniu transportu pod presją uciekającego czasu.",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
-  "scripts": {
-    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"npm run dev --prefix backend\" \"npm run electron:dev --prefix frontend\"",
-    "format": "prettier --write \"**/*.{js,jsx,json,css}\""
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Erqover/WManagement.git"
-  },
-  "keywords": [],
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/Erqover/WManagement/issues"
-  },
-  "homepage": "https://github.com/Erqover/WManagement#readme",
-  "devDependencies": {
-    "concurrently": "^10.0.6",
-    "prettier": "^3.9.10"
-  }
+    "name": "wmanagment",
+    "version": "1.0.0",
+    "description": "Projekt symulatora pracy magazyniera przyjmującego dostawy towarów (mechanika w stylu *Papers, Please*). Gracz wciela się w pracownika rampy, którego zadaniem jest weryfikacja dokumentów przewozowych, sprawdzanie towaru i podejmowanie decyzji o przyjęciu lub odrzuceniu transportu pod presją uciekającego czasu.",
+    "main": "index.js",
+    "directories": {
+        "doc": "docs"
+    },
+    "scripts": {
+        "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"npm run dev --prefix backend\" \"npm run electron:dev --prefix frontend\"",
+        "format": "prettier --write \"**/*.{js,jsx,json,css}\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Erqover/WManagement.git"
+    },
+    "keywords": [],
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/Erqover/WManagement/issues"
+    },
+    "homepage": "https://github.com/Erqover/WManagement#readme",
+    "devDependencies": {
+        "concurrently": "^10.0.6",
+        "prettier": "^3.9.10"
+    }
 }
