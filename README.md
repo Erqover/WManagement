@@ -45,12 +45,8 @@ Wizualna koncepcja interfejsu została podzielona na trzy główne ekrany:
 ```
 
 
-## Uruchomienie backendu
+## Uruchomienie db
+`docker compose up`
 
-(będąc w /backend)
-docker compose up --build
-
-
-## Uruchomienie frontendu
-
-npm run electron:dev
+## Uruchomienie aplikacji
+`npm run dev`
