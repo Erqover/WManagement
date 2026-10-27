@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './GameScreen.css';
+import Zegar from './Zegar';
 
 export default function GameScreen({ saveData, onBackToMenu }) {
     return (
         <div className="game-screen">
             <div className="window-view">
                 [WIDOK NA RAMPĘ]
-                <div className="hud-clock">TIME: 6:00 AM | DAY 01</div>
+                {/* <div className="hud-clock">TIME: 6:00 AM | DAY 01</div> */}
+                <div className="hud-clock"><Zegar/></div>
             </div>
             <div className="desk-view">
                 {/* 1. DOKUMENT MANIFESTU */}
