@@ -7,8 +7,15 @@ export default function GameScreen({ saveData, onBackToMenu }) {
         <div className="game-screen">
             <div className="window-view">
                 [WIDOK NA RAMPĘ]
-                {/* <div className="hud-clock">TIME: 6:00 AM | DAY 01</div> */}
-                <div className="hud-clock"><Zegar/></div>
+                <div className="hud-top-bar">
+                    <button className="hud-btn-back" onClick={onBackToMenu}>
+                        ← MENU
+                    </button>
+
+                    <div className="hud-clock">
+                        <Zegar /> | DAY {String(saveData?.current_day || 1).padStart(2, '0')}
+                    </div>
+                </div>
             </div>
             <div className="desk-view">
                 {/* 1. DOKUMENT MANIFESTU */}
@@ -56,14 +63,6 @@ export default function GameScreen({ saveData, onBackToMenu }) {
                         <li>ILOŚĆ</li>
                         <li>PODPIS</li>
                     </ul>
-                </div>
-
-                {/* 4. PRZYCISKI AKCJI W ROGU */}
-                <div className="desk-actions">
-                    <button className="desk-btn">ZbADAJ / INSPECT</button>
-                    <button className="desk-btn desk-btn-next">
-                        NASTĘPNY / NEXT
-                    </button>
                 </div>
             </div>
         </div>

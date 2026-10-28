@@ -29,7 +29,9 @@ export default function App() {
             )}
 
             {screen === 'GAME' && (
-                <GameScreen onBackToMenu={() => setScreen('MAIN_MENU')} />
+                <GameScreen
+                    saveData={activeSave}
+                    onBackToMenu={() => setScreen('MAIN_MENU')} />
             )}
         </div>
     );
