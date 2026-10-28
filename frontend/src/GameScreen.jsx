@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './GameScreen.css';
-import Zegar from './Zegar';
+import Clock from './Clock';
 
 export default function GameScreen({ saveData, onBackToMenu }) {
     return (
@@ -13,7 +13,7 @@ export default function GameScreen({ saveData, onBackToMenu }) {
                     </button>
 
                     <div className="hud-clock">
-                        <Zegar /> | DAY {String(saveData?.current_day || 1).padStart(2, '0')}
+                        <Clock /> | DAY {String(saveData?.current_day || 1).padStart(2, '0')}
                     </div>
                 </div>
             </div>
