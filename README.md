@@ -44,6 +44,11 @@ Wizualna koncepcja interfejsu została podzielona na trzy główne ekrany:
 └── README.md
 ```
 
+## Wykorzystanie AI:
+- generowanie grafiki
+- generowanie stylów css
+- wyszukiwanie informacji
+
 
 ## Uruchomienie db
 `docker compose up`

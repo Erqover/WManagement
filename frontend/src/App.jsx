@@ -4,7 +4,7 @@ import SaveSlots from './SaveSlots';
 import GameScreen from './GameScreen';
 
 export default function App() {
-    const [screen, setScreen] = useState('MAIN_MENU'); // upewnij się, że domyślna wartość to dokładnie 'MAIN_MENU'
+    const [screen, setScreen] = useState('MAIN_MENU');
     const [activeSave, setActiveSave] = useState(null);
 
     const handleStartGame = (saveData) => {
