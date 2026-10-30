@@ -8,10 +8,9 @@
 **aby** kontrolować tempo pracy i wiedzieć, ile czasu zostało do końca zmiany.
 
 **Kryteria Akceptacji:**
-* **Given:** Rozpoczyna się nowy dzień pracy i ładuje się pierwsza dostawa.
+* **Given:** Rozpoczyna się nowy dzień pracy
 * **When:** Trwa właściwa rozgrywka.
-* **Then:** Zegar w rogu ekranu wyświetla numer dnia oraz odlicza czas w górę (np. od 6AM do 12PM), a po osiągnięciu zera blokuje możliwość stemplowania kolejnych dostaw i wymusza zakończenie dnia.
-
+* **Then:** Zegar w rogu ekranu wyświetla numer dnia oraz odlicza czas w górę (np. od 6AM do 12PM).
 ---
 
 ### US-02: Sprawdzenie poprawności dostarczonych produktów
