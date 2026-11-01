@@ -10,10 +10,6 @@ app.use(express.json());
 
 app.use('/api/saves', savesRoutes);
 
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'ChemZero Backend' });
-});
-
 app.listen(port, () => {
     console.log(`Serwer API nasluchuje na porcie ${port}`);
 });

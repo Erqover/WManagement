@@ -1,0 +1,29 @@
+[
+    {
+        "slot_id": 1,
+        "save_data": {
+            "day": 1,
+            "money": 0,
+            "unlocked_tools": []
+        },
+        "updated_at": "2026-11-01T23:25:14.796Z"
+    },
+    {
+        "slot_id": 2,
+        "save_data": {
+            "day": 1,
+            "money": 0,
+            "unlocked_tools": []
+        },
+        "updated_at": null
+    },
+    {
+        "slot_id": 3,
+        "save_data": {
+            "day": 1,
+            "money": 0,
+            "unlocked_tools": []
+        },
+        "updated_at": null
+    }
+]

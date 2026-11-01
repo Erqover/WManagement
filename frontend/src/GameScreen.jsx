@@ -3,6 +3,10 @@ import './GameScreen.css';
 import Clock from './Clock';
 
 export default function GameScreen({ saveData, onBackToMenu }) {
+
+    const currentDay = saveData?.save_data?.day ?? 1;
+    const money = saveData?.save_data?.money ?? 0;
+
     return (
         <div className="game-screen">
             <div className="window-view">
@@ -13,7 +17,7 @@ export default function GameScreen({ saveData, onBackToMenu }) {
                     </button>
 
                     <div className="hud-clock">
-                        <Clock /> | DAY {String(saveData?.current_day || 1).padStart(2, '0')}
+                        <Clock /> | DAY {String(currentDay).padStart(2, '0')}
                     </div>
                 </div>
             </div>

@@ -24,19 +24,37 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
     }, []);
 
     const handleStartSave = async (slotId) => {
+        const currentSlot = slots[slotId];
+        //jezeli klikamy w slot ktory ma juz postęp to przechodzimy do gry 
+        if (currentSlot && currentSlot.save_data && currentSlot.updated_at) {
+            onSelectSlot(currentSlot);
+            return;
+        }
+        const newSave = {
+            slot_id: slotId,
+            save_data: {
+                day: 1,
+                money: 0,
+                unlocked_tools: []
+            }
+        };
         try {
             const response = await fetch(
                 'http://localhost:5000/api/saves/new',
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ slotId }),
+                    body: JSON.stringify(newSave),
                 }
             );
             const data = await response.json();
             onSelectSlot(data);
         } catch {
-            onSelectSlot({ slot_id: slotId, current_day: 1, balance: 250 });
+            onSelectSlot({
+                slot_id: slotId,
+                save_data: { day: 1, money: 0, unlocked_tools: [] },
+                updated_at: null
+            });
         }
     };
 
@@ -86,6 +104,7 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
                     {[1, 2, 3].map((id) => {
                         const save = slots[id];
                         const isConfirming = confirmingSlot === id;
+                        const hasData = Boolean(save && save.save_data && save.updated_at);
 
                         return (
                             <div key={id} className="slot-row">
@@ -106,14 +125,14 @@ export default function SaveSlots({ onSelectSlot, onBack }) {
                                             marginTop: '6px',
                                         }}
                                     >
-                                        {save
-                                            ? `DZIEŃ: ${save.current_day} | SALDO: ${save.balance} $`
+                                        {hasData
+                                            ? `DZIEŃ: ${save.save_data.day} | SALDO: ${save.save_data.money} $`
                                             : '[ PUSTY SLOT ]'}
                                     </div>
                                 </button>
 
                                 {/* Sekcja usuwania (aktywna tylko gdy slot posiada dane) */}
-                                {save && (
+                                {hasData && (
                                     <div className="slot-actions">
                                         {!isConfirming ? (
                                             <button
