@@ -253,3 +253,14 @@
 .action-cancel:hover {
     background: #421b1b;
 }
+
+/* USZKODZONY SLOT (BŁĄD SUMY KONTROLNEJ) */
+.slot-corrupted,
+.slot-corrupted:hover {
+    border-color: #7f1d1d;
+    background: #1c1313;
+    color: #fca5a5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 4px 4px 0px #000;
+}

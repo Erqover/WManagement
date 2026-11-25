@@ -1,29 +1,31 @@
 [
-    {
-        "slot_id": 1,
-        "save_data": {
-            "day": 1,
-            "money": 0,
-            "unlocked_tools": []
-        },
-        "updated_at": "2026-11-01T23:25:14.796Z"
+  {
+    "slot_id": 1,
+    "save_data": {
+      "day": 1,
+      "money": 0,
+      "unlocked_tools": []
     },
-    {
-        "slot_id": 2,
-        "save_data": {
-            "day": 1,
-            "money": 0,
-            "unlocked_tools": []
-        },
-        "updated_at": null
+    "updated_at": "2026-11-25T17:47:15.708Z",
+    "checksum": "0f6c543422fc8414db15081acadeab771551c60eedbb189b8a56e143d6222e82"
+  },
+  {
+    "slot_id": 2,
+    "save_data": {
+      "day": 2,
+      "money": 0,
+      "unlocked_tools": []
     },
-    {
-        "slot_id": 3,
-        "save_data": {
-            "day": 1,
-            "money": 0,
-            "unlocked_tools": []
-        },
-        "updated_at": null
-    }
+    "updated_at": "2026-11-25T17:47:22.224Z",
+    "checksum": "5f68edffa6521640d92f6fd672783efd9300e5a39fc49256e7f9714ec2a4ff26"
+  },
+  {
+    "slot_id": 3,
+    "save_data": {
+      "day": 1,
+      "money": 0,
+      "unlocked_tools": []
+    },
+    "updated_at": null
+  }
 ]
