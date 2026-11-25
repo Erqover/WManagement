@@ -1,26 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './GameScreen.css';
 import Clock from './Clock';
 
-export default function GameScreen({ saveData, onBackToMenu }) {
+// Dzień 1 = 12.11.2026 (miesiące w JS Date są indeksowane od 0, więc 10 = listopad)
+const formatGameDate = (dayNumber) => {
+    const date = new Date(2026, 10, 12);
+    date.setDate(date.getDate() + (dayNumber - 1));
 
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year}`;
+};
+
+export default function GameScreen({ saveData, onBackToMenu }) {
     const currentDay = saveData?.save_data?.day ?? 1;
     const money = saveData?.save_data?.money ?? 0;
+    const formattedDate = formatGameDate(currentDay);
 
     return (
         <div className="game-screen">
             <div className="window-view">
                 [WIDOK NA RAMPĘ]
                 <div className="hud-top-bar">
-                    <button className="hud-btn-back" onClick={onBackToMenu}>
-                        ← MENU
-                    </button>
+                    {/* LEWY GÓRNY RÓG: DATA */}
+                    <div className="hud-date">
+                        DATE: {formattedDate}
+                    </div>
 
-                    <div className="hud-clock">
-                        <Clock /> | DAY {String(currentDay).padStart(2, '0')}
+                    {/* PRAWY GÓRNY RÓG: MENU I ZEGAR */}
+                    <div className="hud-right-group">
+                        <button className="hud-btn-back" onClick={onBackToMenu}>
+                            ← MENU
+                        </button>
+
+                        <div className="hud-clock">
+                            <Clock /> | DAY {String(currentDay).padStart(2, '0')}
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div className="desk-view">
                 {/* 1. DOKUMENT MANIFESTU */}
                 <div className="manifest-document">

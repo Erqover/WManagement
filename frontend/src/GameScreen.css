@@ -200,11 +200,30 @@
 .hud-top-bar {
     position: absolute;
     top: 16px;
+    left: 24px;
     right: 24px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     z-index: 10;
+}
+
+.hud-right-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* DATA W LEWYM GÓRNYM ROGU */
+.hud-date {
+    background: #111817;
+    border: 2px solid #334155;
+    color: #6ee7b7;
+    padding: 8px 16px;
+    font-size: 26px;
+    letter-spacing: 2px;
+    box-shadow: 2px 2px 0px #000;
+    white-space: nowrap;
 }
 
 /* PRZYCISK POWROTU DO MENU */

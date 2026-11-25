@@ -12,12 +12,12 @@
   {
     "slot_id": 2,
     "save_data": {
-      "day": 2,
+      "day": 1,
       "money": 0,
       "unlocked_tools": []
     },
-    "updated_at": "2026-11-25T17:47:22.224Z",
-    "checksum": "5f68edffa6521640d92f6fd672783efd9300e5a39fc49256e7f9714ec2a4ff26"
+    "updated_at": "2026-11-25T18:13:05.129Z",
+    "checksum": "b95d455193b099e54ab587e23648340ee6775e6eabf457fad72202c6aacb0353"
   },
   {
     "slot_id": 3,
