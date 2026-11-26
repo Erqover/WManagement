@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import './GameScreen.css';
 import Clock from './Clock';
 
-// Dzień 1 = 12.11.2026 (miesiące w JS Date są indeksowane od 0, więc 10 = listopad)
 const getGameDateObj = (dayNumber) => {
     const date = new Date(2026, 10, 12);
     date.setDate(date.getDate() + (dayNumber - 1));
@@ -22,7 +21,7 @@ const MANIFEST_TEMPLATES = [
         items: '20x Acid, 10x Solvents',
         declaredQty: 30,
         actualQty: 30,
-        expDate: new Date(2026, 9, 24), // przeterminowane względem 12.11.2026
+        expDate: new Date(2026, 9, 24),
         hasSignature: false,
     },
     {
@@ -37,7 +36,7 @@ const MANIFEST_TEMPLATES = [
         carrier: 'NORD-CHEM',
         items: '12x Mercury Vials',
         declaredQty: 12,
-        actualQty: 9, // niezgodna ilość na rampie
+        actualQty: 9,
         expDate: new Date(2027, 5, 1),
         hasSignature: true,
     },
@@ -106,7 +105,7 @@ export default function GameScreen({ saveData, onBackToMenu }) {
         e.dataTransfer.effectAllowed = 'move';
     };
 
-    // Zakończenie przeciągania (również poza kartką)
+    // Zakończenie przeciągania
     const handleDragEnd = () => {
         setDraggedStamp(null);
         setIsDragOver(false);
@@ -114,7 +113,7 @@ export default function GameScreen({ saveData, onBackToMenu }) {
 
     // Stempel znajduje się nad kartką manifestu
     const handleDragOver = (e) => {
-        e.preventDefault(); // wymagane, aby przeglądarka pozwoliła na upuszczenie (onDrop)
+        e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
         if (!isDragOver) {
             setIsDragOver(true);
@@ -136,7 +135,7 @@ export default function GameScreen({ saveData, onBackToMenu }) {
 
         if (!chosenDecision || stampMark) return;
 
-        // Obliczenie dokładnej pozycji odbicia pieczęci wewnątrz kartki
+        // Obliczenie pozycji odbicia pieczęci wewnątrz kartki
         const rect = manifestRef.current.getBoundingClientRect();
         const stampWidth = 150;
         const stampHeight = 56;
@@ -178,7 +177,6 @@ export default function GameScreen({ saveData, onBackToMenu }) {
         }
     };
 
-    // Podpowiedź, gdy gracz spróbuje kliknąć stempel zamiast go przeciągnąć
     const handleStampClickHint = () => {
         if (stampMark) return;
         setFeedback({
