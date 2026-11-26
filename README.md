@@ -49,6 +49,9 @@ Wizualna koncepcja interfejsu została podzielona na trzy główne ekrany:
 - generowanie stylów css
 - wyszukiwanie informacji
 
+## HighFi Mockups i User Flow wykonywane w Figma:
+* **Mockup:** https://www.figma.com/design/dRMn49f1CpqYTapDuNnH93/ChemZero---UI-UX?t=yofow5wUgrAaRK6S-1
+* **User Flow Diagram:** https://www.figma.com/board/iuIK9OJVj4vmkAErUVScqz/ChemZero---User-Journey---Flows?node-id=0-1&t=yofow5wUgrAaRK6S-1
 
 ## Uruchomienie db
 `docker compose up`
