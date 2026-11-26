@@ -261,3 +261,93 @@
     align-items: center;
     gap: 8px;
 }
+
+/* KURSOR CHWYTANIA I STANY PRZECIĄGANIA STEMPLA */
+.stamp-handle {
+    cursor: grab;
+    -webkit-user-drag: element;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.stamp-handle:active:not(.stamp-locked) {
+    cursor: grabbing;
+}
+
+.stamp-dragging {
+    opacity: 0.45;
+    transform: scale(0.95);
+}
+
+.stamp-locked {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* PODŚWIETLENIE KARTKI GDY STEMPEL JEST NAD NIĄ */
+.manifest-drop-active {
+    outline: 3px dashed #eab308;
+    outline-offset: -8px;
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.35);
+}
+
+/* ODCISK PIECZĘCI POZYCJONOWANY W PUNKCIE UPUSZCZENIA */
+.manifest-stamp-placed {
+    position: absolute;
+    width: 150px;
+    border: 3px double;
+    text-align: center;
+    font-weight: bold;
+    padding: 6px 8px;
+    font-size: 15px;
+    pointer-events: none;
+    background: rgba(252, 251, 247, 0.72);
+    animation: stamp-impact 0.12s ease-out;
+}
+
+.stamp-approved {
+    border-color: #15803d;
+    color: #15803d;
+}
+
+.stamp-rejected {
+    border-color: #b91c1c;
+    color: #b91c1c;
+}
+
+@keyframes stamp-impact {
+    0% {
+        transform: scale(1.35);
+        opacity: 0.4;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* PASEK KOMUNIKATÓW W WIDOKU OKNA */
+.hud-feedback {
+    position: absolute;
+    bottom: 16px;
+    padding: 8px 18px;
+    font-size: 22px;
+    letter-spacing: 1px;
+    border: 2px solid;
+    background: rgba(10, 15, 13, 0.92);
+    box-shadow: 3px 3px 0px #000;
+}
+
+.hud-feedback.success {
+    border-color: #22c55e;
+    color: #86efac;
+}
+
+.hud-feedback.error {
+    border-color: #ef4444;
+    color: #fca5a5;
+}
+
+.hud-feedback.hint {
+    border-color: #eab308;
+    color: #fef08a;
+}
