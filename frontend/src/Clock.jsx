@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Summary from "./Summary";
 
-function Clock() {
+function Clock({ onEnd }) {
     const [time, setTime] = useState(6 * 60);
-    const [end, setEnd] = useState(false);
 
     useEffect(() => {
         const start = performance.now();
-        const duration = 5 * 60 * 1000;
+        const duration = 1 * 60 * 1000;
         const virtTime = 6 * 60;
 
         const interval = setInterval(() => {
@@ -15,8 +13,8 @@ function Clock() {
 
             if (elapsed >= duration) {
                 setTime(12 * 60);
-                setEnd(true);
                 clearInterval(interval);
+                onEnd();
                 return;
             }
 
@@ -27,14 +25,10 @@ function Clock() {
         }, 100);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [onEnd]);
 
     const hours = Math.floor(time / 60);
     const minutes = time % 60;
-
-    if (end) {
-        return <Summary />;
-    }
 
     return (
         <span>

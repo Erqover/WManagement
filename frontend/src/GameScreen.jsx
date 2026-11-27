@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import './GameScreen.css';
 import Clock from './Clock';
+import Summary from './Summary';
 
 const getGameDateObj = (dayNumber) => {
     const date = new Date(2026, 10, 12);
@@ -78,7 +79,23 @@ const validateManifest = (manifest, currentGameDate) => {
 };
 
 export default function GameScreen({ saveData, onBackToMenu }) {
-    const currentDay = saveData?.save_data?.day ?? 1;
+    //Do obslugi Summary po zakonczeniu dnia
+    const [dayEnded, setDayEnded] = useState(false);
+    const handleDayEnd = useCallback(() => {
+        setDayEnded(true);
+    }, []);
+
+    //Numeracja dni
+    const [currentDay, setCurrentDay] = useState(saveData?.save_data?.day ?? 1);
+
+    const handleStartNextDay = () => {
+        setCurrentDay((prev) => prev + 1);
+        setStampMark(null);
+        setFeedback(null);
+        setDayEnded(false);
+    }
+
+    //const currentDay = saveData?.save_data?.day ?? 1;
     const gameDateObj = getGameDateObj(currentDay);
     const formattedDate = formatDate(gameDateObj);
 
@@ -193,6 +210,17 @@ export default function GameScreen({ saveData, onBackToMenu }) {
         setFeedback(null);
     };
 
+    //Wyswietlenie summary po zakonczeniu dnia
+    if (dayEnded) {
+        return (
+            <Summary
+                day={currentDay}
+                money={money}
+                onNextDay={handleStartNextDay}
+            />
+        );
+    }
+
     return (
         <div className="game-screen">
             <div className="window-view">
@@ -217,7 +245,8 @@ export default function GameScreen({ saveData, onBackToMenu }) {
                         </button>
 
                         <div className="hud-clock">
-                            <Clock/> | DAY {String(currentDay).padStart(2, '0')}
+                            <Clock onEnd={handleDayEnd} /> 
+                            { "|" } DAY {String(currentDay).padStart(2, '0')}
                         </div>
                     </div>
                 </div>
