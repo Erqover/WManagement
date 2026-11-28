@@ -1,0 +1,23 @@
+[
+    {
+        "day": 1,
+        "title": "DZIEŃ 1 — WDROŻENIE",
+        "briefing": "Witaj na stanowisku inspektora dostaw w magazynie ChemZero. Jesteśmy bardzo wdzięczni, że zgodziłeś się przyjąć tę posadę. Wierzymy, że z Twoim doświadczeniem nasza firma uniknie bankructwa. Twoim zadaniem jest kontrola dokumentów przewozowych. Sprawdź, czy data ważności nie minęła, czy ilość na manifeście zgadza się ze skanerem na rampie oraz czy widnieje podpis. Użyj odpowiedniego stempla, aby podjąć decyzję. Zasady przyjmowania dostaw znajdziesz na biurku w DZIENNIKU ZASAD. Powodzenia i trzymamy kciuki!",
+        "rulesId": [
+            "CHECK_EXPIRATION",
+            "CHECK_QUANTITY",
+            "CHECK_SIGNATURE"
+        ]
+    },
+    {
+        "day": 2,
+        "title": "DZIEŃ 2 — NOWE WYTYCZNE",
+        "briefing": "UWAGA: Od dzisiaj zaostrzamy kontrolę przewoźników wysokiego ryzyka. Nie posiadamy infrastruktury umożliwiającej bezpieczne przechowywanie kwasów o wysokim stopniu ryzyka. Każda dostawa zawierająca klasę niebezpieczeństwa o numerze III powinna zostać odrzucona",
+        "rulesId": [
+            "CHECK_EXPIRATION",
+            "CHECK_QUANTITY",
+            "CHECK_SIGNATURE",
+            "BAN_CLASS_III_ACIDS"
+        ]
+    }
+]

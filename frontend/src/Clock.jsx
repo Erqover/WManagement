@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-function Clock({ onEnd }) {
+function Clock({ isRunning, onEnd }) {
     const [time, setTime] = useState(6 * 60);
 
     useEffect(() => {
+        if (!isRunning) return;
+
         const start = performance.now();
-        const duration = 1 * 60 * 1000;
+        const duration = 5 * 60 * 1000;
         const virtTime = 6 * 60;
 
         const interval = setInterval(() => {
@@ -25,7 +27,7 @@ function Clock({ onEnd }) {
         }, 100);
 
         return () => clearInterval(interval);
-    }, [onEnd]);
+    }, [isRunning, onEnd]);
 
     const hours = Math.floor(time / 60);
     const minutes = time % 60;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import './GameScreen.css';
 import Clock from './Clock';
 import Summary from './Summary';
@@ -85,21 +85,18 @@ export default function GameScreen({ saveData, onBackToMenu }) {
         setDayEnded(true);
     }, []);
 
-    //Numeracja dni
+    //Numeracja dni i stan zmiany
     const [currentDay, setCurrentDay] = useState(saveData?.save_data?.day ?? 1);
+    const [money, setMoney] = useState(saveData?.save_data?.money ?? 0);
 
-    const handleStartNextDay = () => {
-        setCurrentDay((prev) => prev + 1);
-        setStampMark(null);
-        setFeedback(null);
-        setDayEnded(false);
-    }
+    //Czy gracz kliknął "NASTĘPNA DOSTAWA" i uruchomił zegar
+    const [shiftStarted, setShiftStarted] = useState(false);
+    const [noteSlidingOut, setNoteSlidingOut] = useState(false);
 
     //const currentDay = saveData?.save_data?.day ?? 1;
     const gameDateObj = getGameDateObj(currentDay);
     const formattedDate = formatDate(gameDateObj);
 
-    const [money, setMoney] = useState(saveData?.save_data?.money ?? 0);
     const [manifestIndex, setManifestIndex] = useState(0);
     const [manifest, setManifest] = useState(() => getManifestByIndex(0));
 
@@ -110,6 +107,66 @@ export default function GameScreen({ saveData, onBackToMenu }) {
     const [feedback, setFeedback] = useState(null);
 
     const manifestRef = useRef(null);
+
+    const [dayInfo, setDayInfo] = useState({
+        title: `DZIEŃ ${String(currentDay).padStart(2, '0')}`,
+        briefing: 'Ładowanie wytycznych...',
+        rules: [
+            { id: 'CHECK_EXPIRATION', label: 'SPRAWDŹ DATĘ WAŻNOŚCI' },
+            { id: 'CHECK_QUANTITY', label: 'PORÓWNAJ ILOŚĆ Z RAMPĄ' },
+            { id: 'CHECK_SIGNATURE', label: 'WYMAGANY PODPIS KIEROWCY' },
+        ],
+    })
+
+    useEffect(() => {
+        fetch(`http://localhost:5000/api/days/${currentDay}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data && data.briefing) {
+                    setDayInfo(data);
+                }
+            })
+            .catch((err) => console.error('Błąd pobierania danych', err));
+    }, [currentDay]);
+
+    const handleStartNextDay = async () => {
+        const nextDay = currentDay + 1;
+
+        if (saveData?.slot_id) {
+            try {
+                await fetch('http://localhost:5000/api/saves/new', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        slot_id: saveData.slot_id,
+                        save_data: {
+                            day: nextDay,
+                            money: money,
+                            unlocked_tools: saveData?.save_data?.unlocked_tools ?? [],
+                        },
+                    }),
+                });
+            } catch (err) {
+                console.error('Błąd zapisu postępu kolejnego dnia: ', err);
+            }
+        }
+
+        setCurrentDay(nextDay);
+        setShiftStarted(false);
+        setNoteSlidingOut(false);
+        setStampMark(null);
+        setFeedback(null);
+        setDayEnded(false);
+    }
+
+    // rozpoczęcie pierwszej dostawy (animacja kartki)
+    const handleStartFirstDelivery = () => {
+        setNoteSlidingOut(true);
+        setTimeout(() => {
+            setShiftStarted(true);
+        }, 550);
+    }
+
 
     // Rozpoczęcie przeciągania stempla z tacki
     const handleDragStart = (e, stampType) => {
@@ -195,6 +252,13 @@ export default function GameScreen({ saveData, onBackToMenu }) {
     };
 
     const handleStampClickHint = () => {
+        if (!shiftStarted) {
+            setFeedback({
+                type: 'hint',
+                message: 'NAJPIERW KLIKNIJ "NASTĘPNA DOSTAWA", ABY ROZPOCZĄĆ ZMIANĘ',
+            });
+            return;
+        }
         if (stampMark) return;
         setFeedback({
             type: 'hint',
@@ -221,11 +285,16 @@ export default function GameScreen({ saveData, onBackToMenu }) {
         );
     }
 
+    //przycisk dostawy aktywny tylko gdy podbilismy dostawe
+    const canTriggerNextDelivery = !shiftStarted || Boolean(stampMark);
+
     return (
         <div className="game-screen">
             <div className="window-view">
                 <div>
-                    [WIDOK NA RAMPĘ — WYKRYTO {manifest.actualQty} SZT. ŁADUNKU]
+                    {shiftStarted
+                        ? `[WIDOK NA RAMPĘ — WYKRYTO ${manifest.actualQty} SZT. ŁADUNKU]`
+                        : '[RAMPA PUSTA — ZAPOZNaj SIĘ Z WYTYCZNYMI DNIA]'}
                 </div>
 
                 {feedback && (
@@ -245,72 +314,89 @@ export default function GameScreen({ saveData, onBackToMenu }) {
                         </button>
 
                         <div className="hud-clock">
-                            <Clock onEnd={handleDayEnd} /> 
-                            { "|" } DAY {String(currentDay).padStart(2, '0')}
+                            <Clock
+                                key={currentDay}
+                                isRunning={shiftStarted}
+                                onEnd={handleDayEnd}
+                            />{' '}
+                            | DAY {String(currentDay).padStart(2, '0')}
                         </div>
                     </div>
                 </div>
             </div>
 
             <div className="desk-view">
-                {/* 1. DOKUMENT MANIFESTU (STREFA UPUSZCZANIA STEMPLA) */}
-                <div
-                    ref={manifestRef}
-                    className={`manifest-document ${isDragOver ? 'manifest-drop-active' : ''}`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDropOnManifest}
-                >
-                    <div className="manifest-title">
-                        DELIVERY MANIFEST {manifest.id}
+                {/* 1. PORANNA KARTKA LUB DOKUMENT MANIFESTU */}
+                {!shiftStarted ? (
+                    <div
+                        className={`briefing-note ${noteSlidingOut ? 'slide-down-exit' : ''
+                            }`}
+                    >
+                        <div className="briefing-header">{dayInfo.title}</div>
+                        <p className="briefing-text">{dayInfo.briefing}</p>
+                        <div className="briefing-footer">
+                            — KIEROWNICTWO ZMIANY CHEMZERO
+                        </div>
                     </div>
-                    <div className="manifest-row">
-                        <strong>CARRIER:</strong> {manifest.carrier}
-                    </div>
-                    <div className="manifest-row">
-                        <strong>ITEMS:</strong> {manifest.items}
-                    </div>
-                    <div className="manifest-row">
-                        <strong>DECLARED QTY:</strong> {manifest.declaredQty} pcs
-                    </div>
-                    <div className="manifest-row">
-                        <strong>EXP:</strong> {formatDate(manifest.expDate)}
-                    </div>
-                    <div className="manifest-row">
-                        <strong>SIGNATURE:</strong>{' '}
-                        {manifest.hasSignature ? 'J. Kowalski' : '[brak]'}
-                    </div>
+                ) : (
+                    <div
+                        ref={manifestRef}
+                        className={`manifest-document ${isDragOver ? 'manifest-drop-active' : ''
+                            }`}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDropOnManifest}
+                    >
+                        <div className="manifest-title">
+                            DELIVERY MANIFEST {manifest.id}
+                        </div>
+                        <div className="manifest-row">
+                            <strong>CARRIER:</strong> {manifest.carrier}
+                        </div>
+                        <div className="manifest-row">
+                            <strong>ITEMS:</strong> {manifest.items}
+                        </div>
+                        <div className="manifest-row">
+                            <strong>DECLARED QTY:</strong> {manifest.declaredQty} pcs
+                        </div>
+                        <div className="manifest-row">
+                            <strong>EXP:</strong> {formatDate(manifest.expDate)}
+                        </div>
+                        <div className="manifest-row">
+                            <strong>SIGNATURE:</strong>{' '}
+                            {manifest.hasSignature ? 'J. Kowalski' : '[brak]'}
+                        </div>
 
-                    {/* ODCISK PIECZĘCI W MIEJSCU UPUSZCZENIA NA KARTCE */}
-                    {stampMark && (
-                        <div
-                            className={`manifest-stamp-placed ${
-                                stampMark.type === 'ACCEPTED'
+                        {/* ODCISK PIECZĘCI W MIEJSCU UPUSZCZENIA NA KARTCE */}
+                        {stampMark && (
+                            <div
+                                className={`manifest-stamp-placed ${stampMark.type === 'ACCEPTED'
                                     ? 'stamp-approved'
                                     : 'stamp-rejected'
-                            }`}
-                            style={{
-                                left: `${stampMark.x}px`,
-                                top: `${stampMark.y}px`,
-                                transform: `rotate(${stampMark.angle}deg)`,
-                            }}
-                        >
-                            {stampMark.type === 'ACCEPTED' ? (
-                                <>
-                                    PRZYJĘTO
-                                    <br />
-                                    APPROVED
-                                </>
-                            ) : (
-                                <>
-                                    ODRZUCONO
-                                    <br />
-                                    REJECTED
-                                </>
-                            )}
-                        </div>
-                    )}
-                </div>
+                                    }`}
+                                style={{
+                                    left: `${stampMark.x}px`,
+                                    top: `${stampMark.y}px`,
+                                    transform: `rotate(${stampMark.angle}deg)`,
+                                }}
+                            >
+                                {stampMark.type === 'ACCEPTED' ? (
+                                    <>
+                                        PRZYJĘTO
+                                        <br />
+                                        APPROVED
+                                    </>
+                                ) : (
+                                    <>
+                                        ODRZUCONO
+                                        <br />
+                                        REJECTED
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* 2. TACKA ZE STEMPLAMI DO PRZECIĄGANIA */}
                 <div className="stamp-tray">
@@ -321,9 +407,8 @@ export default function GameScreen({ saveData, onBackToMenu }) {
                         onDragStart={(e) => handleDragStart(e, 'REJECTED')}
                         onDragEnd={handleDragEnd}
                         onClick={handleStampClickHint}
-                        className={`stamp-handle stamp-reject ${
-                            draggedStamp === 'REJECTED' ? 'stamp-dragging' : ''
-                        } ${stampMark ? 'stamp-locked' : ''}`}
+                        className={`stamp-handle stamp-reject ${draggedStamp === 'REJECTED' ? 'stamp-dragging' : ''
+                            } ${stampMark ? 'stamp-locked' : ''}`}
                     >
                         <div className="stamp-knob"></div>
                         <span>ODRZUĆ</span>
@@ -336,37 +421,41 @@ export default function GameScreen({ saveData, onBackToMenu }) {
                         onDragStart={(e) => handleDragStart(e, 'ACCEPTED')}
                         onDragEnd={handleDragEnd}
                         onClick={handleStampClickHint}
-                        className={`stamp-handle stamp-accept ${
-                            draggedStamp === 'ACCEPTED' ? 'stamp-dragging' : ''
-                        } ${stampMark ? 'stamp-locked' : ''}`}
+                        className={`stamp-handle stamp-accept ${draggedStamp === 'ACCEPTED' ? 'stamp-dragging' : ''
+                            } ${stampMark ? 'stamp-locked' : ''}`}
                     >
                         <div className="stamp-knob"></div>
                         <span>PRZYJMIJ</span>
                     </div>
                 </div>
 
-                {/* 3. DZIENNIK ZASAD / NOTES */}
+                {/* 3. DZIENNIK ZASAD / NOTES (ZASILANY DYNAMICZNIE Z RULES.JSON) */}
                 <div className="rules-notebook">
                     <div className="notebook-rings">○○○○○○○○○○</div>
                     <div className="notebook-title">ZASADY PRZYJĘCIA</div>
                     <ul className="notebook-list">
-                        <li>SPRAWDŹ DATĘ</li>
-                        <li>ILOŚĆ</li>
-                        <li>PODPIS</li>
+                        {dayInfo.rules.map((rule) => (
+                            <li key={rule.id} title={rule.description}>
+                                {rule.label}
+                            </li>
+                        ))}
                     </ul>
                 </div>
 
-                {/* 4. PRZYCISK NASTĘPNEJ DOSTAWY */}
-                {stampMark && (
-                    <div className="desk-actions">
-                        <button
-                            className="desk-btn desk-btn-next"
-                            onClick={handleNextDelivery}
-                        >
-                            NASTĘPNA DOSTAWA →
-                        </button>
-                    </div>
-                )}
+                {/* 4. PRZYCISK STARTU ZMIANY LUB NASTĘPNEJ DOSTAWY */}
+                <div className="desk-actions">
+                    <button
+                        className="desk-btn desk-btn-next"
+                        disabled={!canTriggerNextDelivery}
+                        onClick={
+                            !shiftStarted
+                                ? handleStartFirstDelivery
+                                : handleNextDelivery
+                        }
+                    >
+                        NASTĘPNA DOSTAWA →
+                    </button>
+                </div>
             </div>
         </div>
     );

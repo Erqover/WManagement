@@ -15,11 +15,9 @@
     flex: 1;
     position: relative;
     background:
-        radial-gradient(
-            circle at center,
+        radial-gradient(circle at center,
             rgba(16, 185, 129, 0.05) 0%,
-            transparent 70%
-        ),
+            transparent 70%),
         linear-gradient(135deg, #141a18 25%, #0e1311 100%);
     border-right: 1px solid #1f2d26;
     padding: 40px;
@@ -75,13 +73,11 @@
     top: 0;
     bottom: 0;
     width: 14px;
-    background: repeating-linear-gradient(
-        -45deg,
-        #eab308,
-        #eab308 10px,
-        #1c1917 10px,
-        #1c1917 20px
-    );
+    background: repeating-linear-gradient(-45deg,
+            #eab308,
+            #eab308 10px,
+            #1c1917 10px,
+            #1c1917 20px);
 }
 
 .center-panel::before {
@@ -131,7 +127,7 @@
     width: 100%;
 }
 
-.pixel-btn {
+.menu-buttons .pixel-btn {
     font-family: 'VT323', monospace;
     font-size: 28px;
     letter-spacing: 2px;
@@ -145,7 +141,7 @@
     text-align: center;
 }
 
-.pixel-btn:hover {
+.menu-buttons .pixel-btn:hover {
     background: #23342d;
     border-color: #4ade80;
     color: #4ade80;
@@ -154,25 +150,25 @@
 }
 
 /* Wariant z pasami dla Nowej Gry */
-.pixel-btn-primary {
+.menu-buttons .pixel-btn-primary {
     border-color: #eab308;
     color: #fef08a;
 }
 
-.pixel-btn-primary:hover {
+.menu-buttons .pixel-btn-primary:hover {
     background: #2a2410;
     border-color: #facc15;
     color: #facc15;
 }
 
 /* Przycisk Wyjścia */
-.pixel-btn-quit {
+.menu-buttons .pixel-btn-quit {
     border-color: #7f1d1d;
     color: #fca5a5;
     background: #1c1313;
 }
 
-.pixel-btn-quit:hover {
+.menu-buttons .pixel-btn-quit:hover {
     background: #2d1616;
     border-color: #ef4444;
     color: #ef4444;

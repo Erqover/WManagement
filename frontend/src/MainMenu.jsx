@@ -1,7 +1,7 @@
 import React from 'react';
 import './MainMenu.css';
 
-export default function MainMenu({ onNewGame, onContinue }) {
+export default function MainMenu({ onNewGame }) {
     const handleQuit = () => {
         if (window.electronAPI) {
             window.electronAPI.quitGame();
@@ -37,11 +37,7 @@ export default function MainMenu({ onNewGame, onContinue }) {
                         className="pixel-btn pixel-btn-primary"
                         onClick={onNewGame}
                     >
-                        NOWA GRA
-                    </button>
-
-                    <button className="pixel-btn" onClick={onContinue}>
-                        KONTYNUUJ
+                        GRAJ
                     </button>
 
                     <button

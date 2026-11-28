@@ -23,7 +23,11 @@
 .desk-view {
     flex: 55;
     position: relative;
-    background-color: #dfc8a5;
+    background-color: #261710;
+    background-image: url('assets/desk_bg.png');
+    background-repeat: repeat;
+    background-size: 512px auto;
+    image-rendering: pixelated;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -34,7 +38,7 @@
 /* 1. KARTKA MANIFESTU */
 .manifest-document {
     position: absolute;
-    left: 28%;
+    left: 34%;
     top: 50%;
     transform: translateY(-50%);
     width: 320px;
@@ -45,6 +49,7 @@
     box-shadow: 4px 6px 15px rgba(0, 0, 0, 0.25);
     border: 1px solid #d4cfc5;
     font-family: 'Courier New', Courier, monospace;
+    z-index: 4;
 }
 
 .manifest-title {
@@ -77,66 +82,71 @@
 /* 2. TACKA ZE STEMPLAMI */
 .stamp-tray {
     position: absolute;
-    top: 24px;
-    right: 60px;
-    background: #94a3b8;
-    border: 3px solid #475569;
-    border-radius: 8px;
-    padding: 12px;
+    bottom: 14px;
+    left: 24px;
+    top: auto;
+    right: auto;
+    width: 380px;
+    height: 230px;
+    background: url('assets/stamp_tray.png') no-repeat center;
+    background-size: contain;
+    image-rendering: pixelated;
     display: flex;
-    gap: 16px;
-    box-shadow:
-        inset 2px 2px 5px rgba(0, 0, 0, 0.3),
-        3px 3px 8px rgba(0, 0, 0, 0.2);
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 0 24px 26px 24px;
+    z-index: 5;
 }
 
 .stamp-handle {
-    width: 90px;
-    height: 65px;
-    border: 2px solid #1e293b;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-family: 'VT323', monospace;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 2px 3px 0px #000;
+    width: 152px;
+    height: 152px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    image-rendering: pixelated;
+    cursor: grab;
+    -webkit-user-drag: element;
+    transition: transform 0.12s ease, filter 0.12s ease, opacity 0.15s ease;
+}
+
+.stamp-handle:hover:not(.stamp-locked) {
+    transform: translateY(-6px) scale(1.04);
+    filter: brightness(1.08);
+}
+
+.stamp-handle:active:not(.stamp-locked) {
+    cursor: grabbing;
 }
 
 .stamp-reject {
-    background: #dc2626;
-    color: #fff;
+    background-image: url('assets/decline_stamp.png');
 }
 
 .stamp-accept {
-    background: #16a34a;
-    color: #fff;
+    background-image: url('assets/accept_stamp.png');
 }
 
-.stamp-knob {
-    width: 18px;
-    height: 18px;
-    background: #78350f;
-    /* imitacja drewnianej rączki */
-    border-radius: 50%;
-    margin-bottom: 4px;
-    border: 1px solid #000;
+/* Ukrywamy stare tekstowe napisy i kółko z kodu HTML */
+.stamp-knob,
+.stamp-handle span {
+    display: none;
 }
 
 /* 3. NOTATNIK Z ZASADAMI */
 .rules-notebook {
     position: absolute;
-    top: 130px;
-    right: 70px;
-    width: 180px;
+    bottom: 24px;
+    right: 45px;
+    top: auto;
+    width: 200px;
     background: #fffbeb;
-    border: 1px solid #d97706;
+    border: 2px solid #b45309;
     padding: 12px;
-    box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 4px 5px 12px rgba(0, 0, 0, 0.45);
     font-family: 'VT323', monospace;
+    z-index: 4;
 }
 
 .notebook-rings {
@@ -168,32 +178,37 @@
 /* 4. PRZYCISKI AKCJI */
 .desk-actions {
     position: absolute;
-    bottom: 20px;
-    right: 24px;
+    top: 10px;
+    right: 0;
+    bottom: auto;
     display: flex;
-    gap: 12px;
-}
-
-.desk-btn {
-    font-family: 'VT323', monospace;
-    font-size: 22px;
-    padding: 8px 18px;
-    background: #334155;
-    color: #f8fafc;
-    border: 2px solid #0f172a;
-    box-shadow: 3px 3px 0px #000;
-    cursor: pointer;
+    z-index: 6;
 }
 
 .desk-btn-next {
-    background: #1e3a2f;
-    color: #86efac;
-    border-color: #14532d;
+    width: 320px;
+    height: 180px;
+    background: url('assets/delivery_button.png') no-repeat right center;
+    background-size: contain;
+    image-rendering: pixelated;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 0;
+    color: transparent;
 }
 
-.desk-btn:hover {
-    transform: translate(1px, 1px);
-    box-shadow: 2px 2px 0px #000;
+.desk-btn-next:active:not(:disabled) {
+    background-image: url('assets/delivery_button_active.png');
+}
+
+.desk-btn-next:disabled {
+    filter: brightness(0.75) saturate(0.8);
+    cursor: not-allowed;
+}
+
+.desk-btn-next:active {
+    background-image: url('assets/delivery_button_active.png');
 }
 
 /* GÓRNY PASEK WIDOKU OKNA */
@@ -262,17 +277,6 @@
     gap: 8px;
 }
 
-/* KURSOR CHWYTANIA I STANY PRZECIĄGANIA STEMPLA */
-.stamp-handle {
-    cursor: grab;
-    -webkit-user-drag: element;
-    transition: transform 0.1s ease, opacity 0.15s ease;
-}
-
-.stamp-handle:active:not(.stamp-locked) {
-    cursor: grabbing;
-}
-
 .stamp-dragging {
     opacity: 0.45;
     transform: scale(0.95);
@@ -319,6 +323,7 @@
         transform: scale(1.35);
         opacity: 0.4;
     }
+
     100% {
         transform: scale(1);
         opacity: 1;
@@ -350,4 +355,50 @@
 .hud-feedback.hint {
     border-color: #eab308;
     color: #fef08a;
+}
+
+/* Poranna kartka informacyjna na biurku */
+.briefing-note {
+    width: 380px;
+    min-height: 440px;
+    background-color: #f4ebd0;
+    color: #1f2421;
+    border: 4px solid #2b2d2f;
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.55);
+    padding: 24px;
+    font-family: inherit;
+    transform: rotate(-1.5deg);
+    transition: transform 0.55s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 0.45s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 5;
+}
+
+.briefing-note.slide-down-exit {
+    transform: translateY(120vh) rotate(6deg);
+    opacity: 0;
+}
+
+.briefing-header {
+    font-size: 1.2rem;
+    font-weight: 800;
+    border-bottom: 3px dashed #5c5346;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+    color: #8b1e1e;
+}
+
+.briefing-text {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    flex-grow: 1;
+}
+
+.briefing-footer {
+    font-size: 0.82rem;
+    font-weight: bold;
+    text-align: right;
+    color: #4a443b;
+    margin-top: 20px;
 }

@@ -1,0 +1,26 @@
+[
+    {
+        "id": "CHECK_EXPIRATION",
+        "label": "SPRAWDŹ DATĘ WAŻNOŚCI",
+        "category": "DOKUMENTY",
+        "description": "Data ważności (EXP) nie może być wcześniejsza niż obecny dzień."
+    },
+    {
+        "id": "CHECK_QUANTITY",
+        "label": "PORÓWNAJ ILOŚĆ Z RAMPĄ",
+        "category": "ŁADUNEK",
+        "description": "Ilość zadeklarowana musi zgadzać się z odczytem skanera na rampie."
+    },
+    {
+        "id": "CHECK_SIGNATURE",
+        "label": "WYMAGANY PODPIS KIEROWCY",
+        "category": "DOKUMENTY",
+        "description": "Dokument bez podpisu osoby upoważnionej podlega odrzuceniu."
+    },
+    {
+        "id": "BAN_CLASS_III_ACIDS",
+        "label": "ZAKAZ: KWASY KATEGORII III",
+        "category": "SUBSTANCJE",
+        "description": "Transporty zawierające kwasy oznaczone klasą III podlegają odrzuceniu."
+    }
+]
